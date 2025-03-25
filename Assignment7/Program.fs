@@ -7,7 +7,7 @@ open Interpreter.State
 open Interpreter.StateMonad
 
 let [<EntryPoint>] runProgram _ =
-    printfn "%A"(evalState (getVar "x") (mkState 0 None Map.empty))
+    printfn "%A"(evalState (declare "x" >>>= setVar "x" 42 >>>= getVar "x") (mkState 0 None Map.empty))
     0 
 
 // Uncomment the program you want to run
