@@ -9,6 +9,7 @@ module Interpreter.StateMonad
     
     val ret  : 'a -> 'a stateMonad    
     
+    val (=>>) : Result<'a,'b> -> f: ('a -> Result<'c,'b>) -> Result<'c,'b>
     val (>>=) : 'a stateMonad -> ('a -> 'b stateMonad) -> 'b stateMonad
     val (>>>=) : 'a stateMonad -> 'b stateMonad -> 'b stateMonad
 

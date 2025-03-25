@@ -5,59 +5,42 @@ module Interpreter.StateMonad
     
     open State
     open Language
-    
+    let (=>>) x f = x |> Result.bind f 
     type 'a stateMonad = SM of (state -> Result<'a * state, error>)
         
     let ret x      = SM (fun st -> Ok(x, st))
     let fail err= SM (fun _ -> Error err)
     
     let bind (SM f) g =
-        SM (fun st ->
+        SM (fun st -> 
             match f st with
             | Ok (x, st') -> let (SM h) = g x in h st'
             | Error err   -> Error err) 
     
     let declare str  : unit stateMonad =
-        SM (fun st ->
-            match declare str st with
-            | Ok newSt -> Ok((), newSt)
-            | Error err   -> Error err)
+        SM (fun st ->  declare str st =>> (fun newSt  -> Ok((),newSt)))
+            //match declare str st with
+            //| Ok newSt -> Ok((), newSt) how all my functions looked before I used Result.bind. I keep forgetting bind.
+            //| Error err   -> Error err)
         
     let setVar str (v:int) : unit stateMonad =
-        SM (fun st ->
-            match setVar str v st with
-            | Ok newSt -> Ok((), newSt)
-            | Error err   -> Error err)
+        SM (fun st -> setVar str v st =>> (fun newSt  -> Ok((),newSt)))
         
     let getVar str: int stateMonad =
-        SM (fun st ->
-            match getVar str st with
-            | Ok value -> Ok(value, st)
-            | Error err   -> Error err)
+        SM (fun st -> getVar str st =>> (fun value -> Ok(value,st)))
     
     let alloc str size : unit stateMonad =
-        SM (fun st ->
-            match alloc str size st with
-            | Ok newSt -> Ok((), newSt)
-            | Error err   -> Error err)
-        
+        SM (fun st -> alloc str size st =>> (fun newSt  -> Ok((),newSt)))
+       
     let free ptr size : unit stateMonad =
-        SM (fun st ->
-            match free ptr size st with
-            | Ok newSt -> Ok((), newSt)
-            | Error err   -> Error err)
+        SM (fun st -> free ptr size st =>> (fun newSt  -> Ok((),newSt)))
         
     let setMem ptr v : unit stateMonad =
-        SM (fun st ->
-            match setMem ptr v  st with
-            | Ok newSt -> Ok((), newSt)
-            | Error err   -> Error err)
+        SM (fun st -> setMem ptr v st =>> (fun newSt  -> Ok((),newSt)))
         
     let getMem ptr: int stateMonad =
-        SM (fun st ->
-            match getMem ptr st with
-            | Ok value -> Ok(value, st)
-            | Error err   -> Error err)
+        SM (fun st -> getMem ptr st  =>> (fun value -> Ok(value,st)))
+       
         
     let random : int stateMonad =
         SM ( fun st -> Ok(random st,st))
@@ -66,9 +49,8 @@ module Interpreter.StateMonad
     let evalState (a: 'a stateMonad) (st : state)  =
         match a with
         | SM b -> //unwrap that thang
-            match b st with
-            | Ok (v,_) -> Ok v
-            | Error err -> Error err
+            b st =>> (fun (v,_)  -> Ok(v))
+
         
     
     
