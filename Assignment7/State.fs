@@ -17,7 +17,7 @@ module Interpreter.State
         RNG : System.Random
     }
     
-    let mkState (memSize:int) (oseed : int option) : state = {
+    let mkState (memSize:int) (oseed : int option) (prog: program) : state = {
         Data = Map.empty
         Memory = empty memSize
         RNG =

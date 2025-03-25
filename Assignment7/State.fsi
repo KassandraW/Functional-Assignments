@@ -3,7 +3,7 @@ module Interpreter.State
 open Interpreter.Language
 
 type state
-val mkState : int -> int option -> state
+val mkState : int -> int option -> program -> state
 val declare : string -> state -> Result<state,error>
 val getVar : string -> state -> Result<int,error>
 val setVar : string -> int -> state -> Result<state,error>

@@ -6,25 +6,6 @@ module Interpreter.StateMonad
     open State
     open Language
     
-    // Green exercises
-    
-    type 'a stateMonad = SM of (state -> ('a * state) option)
-        
-    let ret x= SM (fun st -> Some(x, st))
-    let fail    = SM (fun _ -> None)
-    
-    let bind (SM f) g =
-        SM (fun st ->
-            match f st with
-            | Some (x, st') -> let (SM h) = g x in h st'
-            | None -> None)
-        
-    
-    
-    
-    // Yellow exercises
-    
-    (*
     type 'a stateMonad = SM of (state -> Result<'a * state, error>)
         
     let ret x      = SM (fun st -> Ok(x, st))
@@ -35,7 +16,56 @@ module Interpreter.StateMonad
             match f st with
             | Ok (x, st') -> let (SM h) = g x in h st'
             | Error err   -> Error err) 
-    *)
+    
+    let declare str  : unit stateMonad =
+        SM (fun st ->
+            match declare str st with
+            | Ok newSt -> Ok((), newSt)
+            | Error err   -> Error err)
+        
+        
+    let setVar str (v:int) : unit stateMonad =
+        SM (fun st ->
+            match setVar str v st with
+            | Ok newSt -> Ok((), newSt)
+            | Error err   -> Error err)
+        
+    let getVar str: int stateMonad =
+        SM (fun st ->
+            match getVar str st with
+            | Ok value -> Ok(value, st)
+            | Error err   -> Error err)
+    
+    let alloc str size : unit stateMonad =
+        SM (fun st ->
+            match alloc str size st with
+            | Ok newSt -> Ok((), newSt)
+            | Error err   -> Error err)
+        
+    let free ptr size : unit stateMonad =
+        SM (fun st ->
+            match free ptr size st with
+            | Ok newSt -> Ok((), newSt)
+            | Error err   -> Error err)
+        
+    let setMem ptr v : unit stateMonad =
+        SM (fun st ->
+            match setMem ptr v  st with
+            | Ok newSt -> Ok((), newSt)
+            | Error err   -> Error err)
+        
+    let getMem ptr: int stateMonad =
+        SM (fun st ->
+            match getMem ptr st with
+            | Ok value -> Ok(value, st)
+            | Error err   -> Error err)
+        
+    let random : int stateMonad =
+        SM ( fun st -> Ok(random st,st))
+           
+        
+    
+    
     
     // Red Green exercises
     (*

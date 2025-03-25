@@ -10,12 +10,8 @@ module Interpreter.StateMonad
     
     val (>>=) : 'a stateMonad -> ('a -> 'b stateMonad) -> 'b stateMonad
     val (>>>=) : 'a stateMonad -> 'b stateMonad -> 'b stateMonad
-    
-    // Green
-    val fail : 'a stateMonad
-    
-    // Yellow
-    //val fail : error -> 'a stateMonad
+
+    val fail : error -> 'a stateMonad
 
     val (>>=) : 'a stateMonad -> ('a -> 'b stateMonad) -> 'b stateMonad
     val (>>>=) : 'a stateMonad -> 'b stateMonad -> 'b stateMonad
