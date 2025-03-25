@@ -23,7 +23,6 @@ module Interpreter.StateMonad
             | Ok newSt -> Ok((), newSt)
             | Error err   -> Error err)
         
-        
     let setVar str (v:int) : unit stateMonad =
         SM (fun st ->
             match setVar str v st with
@@ -62,7 +61,14 @@ module Interpreter.StateMonad
         
     let random : int stateMonad =
         SM ( fun st -> Ok(random st,st))
-           
+    
+    
+    let evalState (a: 'a stateMonad) (st : state)  =
+        match a with
+        | SM b -> //unwrap that thang
+            match b st with
+            | Ok (v,_) -> Ok v
+            | Error err -> Error err
         
     
     

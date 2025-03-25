@@ -2,16 +2,15 @@
 
 open Interpreter.Programs
 open Interpreter.Eval
+open Interpreter.Language
 open Interpreter.State
+open Interpreter.StateMonad
 
-let runProgram prog =
-    42 |>
-    Some |>
-    mkState 10 |>
-    stmntEval prog |>
-    ignore
+let [<EntryPoint>] runProgram _ =
+    printfn "%A"(evalState (getVar "x") (mkState 0 None Map.empty))
+    0 
 
 // Uncomment the program you want to run
 
-runProgram guessANumber
+//runProgram guessANumber
 //runProgram bubbleSort
