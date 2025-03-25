@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Include="Language.fs" />
+      <Compile Include="Programs.fs" />
+      <Compile Include="Memory.fs" />
+      <Compile Include="State.fs" />
+      <Compile Include="StateMonad.fsi" />
+      <Compile Include="StateMonad.fs" />
+      <Compile Include="Eval.fs" />
+      <Compile Include="Program.fs" />
+    </ItemGroup>
+
+</Project>
