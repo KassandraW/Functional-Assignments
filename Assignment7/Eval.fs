@@ -2,9 +2,7 @@ module Interpreter.Eval
 
     open Result
     open Language
-    open State
-    
-    let (>>=) x f = x |> bind f
+    open StateMonad
     
       
     let readFromConsole () = System.Console.ReadLine().Trim()
@@ -13,72 +11,70 @@ module Interpreter.Eval
         let input = readFromConsole()
         let success, result = tryParseInt(input)
         match success with
-        |true -> result
+        |true -> ret result
         |false-> printfn($"{input} is not an integer") ; readInt() 
         
-    let rec arithEval a st  =
+    let rec arithEval (a:aexpr) : int stateMonad =
         match a with
-        | Num x -> Ok x
-        | Var v -> getVar v st
+        | Num x -> ret x 
+        | Var v -> getVar v
         | Add(b,c) -> 
-            (arithEval b st) >>= (fun x ->
-            (arithEval c st ) >>= (fun y ->
-            Ok(x + y)))
+            (arithEval b) >>= (fun x ->
+            (arithEval c) >>= (fun y ->
+            ret(x + y)))
             
         | Mul(b,c) ->
-            (arithEval b st) >>= (fun x ->
-            (arithEval c st ) >>= (fun y ->
-            Ok(x * y)))
+            (arithEval b) >>= (fun x ->
+            (arithEval c) >>= (fun y ->
+            ret(x * y)))
             
         | Div(b,c) ->
-            match arithEval c st with
-            | Ok 0 -> Error(DivisionByZero)
-            | _ -> 
-                (arithEval b st) >>= (fun x ->
-                (arithEval c st ) >>= (fun y ->
-                Ok(x / y)))
+                (arithEval b) >>= (fun x ->
+                (arithEval c) >>= (fun y ->
+                if y = 0 then fail DivisionByZero else
+                ret(x / y)))
         
         | Mod(b,c) ->
-            match arithEval c st with
-            | Ok 0 -> Error(DivisionByZero)
-            | _ -> 
-                (arithEval b st) >>= (fun x ->
-                (arithEval c st ) >>= (fun y ->
-                Ok(x % y)))
+                (arithEval b) >>= (fun x ->
+                (arithEval c) >>= (fun y ->
+                if y = 0 then fail DivisionByZero else
+                ret(x % y)))
         | MemRead e1 ->
-            arithEval e1 st >>= fun x -> getMem x st
-        | Random -> Ok(random st)
-        | Read -> Ok(readInt())
+            arithEval e1 >>= getMem
+        | Random -> random
+        | Read -> readInt()
         | Cond(b,a1,a2) ->
-           match boolEval b st with
+           match boolEval b with
            | Ok true ->
-               arithEval a1 st
+               arithEval a1 
            | Ok false -> 
-              arithEval a2 st
-           | Error e -> Error e 
+              arithEval a2 
+           | Error e -> 
                
-    and boolEval b st =
+    and boolEval (b: bexpr) : bool stateMonad =
         match b with
-        | TT -> Ok true
-        | Eq(a,c) -> (arithEval a st) >>= (fun x ->
-            (arithEval c st ) >>= (fun y ->
-            Ok(x = y)))
+        | TT -> ret true
+        | Eq(a,c) ->
+            (arithEval a) >>= (fun x ->
+            (arithEval c) >>= (fun y ->
+            ret(x = y)))
         
-        | Lt(a,c) -> (arithEval a st) >>= (fun x ->
-            (arithEval c st ) >>= (fun y ->
-            Ok(x < y)))
+        | Lt(a,c) ->
+            (arithEval a) >>= (fun x ->
+            (arithEval c) >>= (fun y ->
+            ret(x < y)))
         
         | Conj(a,c) ->
-            (boolEval a st) >>= (fun x ->
-            (boolEval c st ) >>= (fun y ->
-            Ok(x && y)))
+            (boolEval a) >>= (fun x ->
+            (boolEval c) >>= (fun y ->
+            ret(x && y)))
             
         | Not a ->
-            (boolEval a st) >>= (fun y -> Ok(not y))
+            (boolEval a) >>= (fun y -> ret(not y))
         
             
     let split (s1 : string) (s2 : string) = s2 |> s1.Split |> Array.toList
-    let mergeStrings (es : aexpr list) (s : string) (st : state) : Result<string,error> =
+    let mergeStrings (es : aexpr list) (s : string): Result<string,error> =
         let s1 = split s "%"
         
         let rec mergeStringsA (aexprlist : aexpr list) (stringlist : string list) (acc : string list) : Result<string list, error>  =
