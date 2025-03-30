@@ -4,7 +4,16 @@ module Interpreter.Eval
     open Language
     open StateMonad
     
+    //Computational expression stuff
+    type StateBuilder() =  
+        member this.Bind(f, x) = (>>=) f x  
+        member this.Return(x) = ret x  
+        member this.ReturnFrom(x) = x  
+        member this.Combine(a, b) = a >>= (fun _ -> b) 
       
+    let eval = StateBuilder()
+    
+    //Normal stuff
     let readFromConsole () = System.Console.ReadLine().Trim()
     let tryParseInt (str : string) = System.Int32.TryParse str    
     let rec readInt () = 
@@ -45,6 +54,7 @@ module Interpreter.Eval
         | Read -> readInt()
         | Cond(b,a1,a2) ->
            boolEval b >>= (fun bool -> if bool then arithEval a1 else arithEval a2)
+        | FunctionCall _ -> ret 1 
            
     and boolEval (b: bexpr) : bool stateMonad =
         match b with
@@ -66,106 +76,141 @@ module Interpreter.Eval
             
         | Not a ->
             (boolEval a) >>= (fun y -> ret(not y))
+    
+    
+    //Computational Expression 
+    let rec arithEval2 (a:aexpr) : int stateMonad = eval {
+        match a with
+        | Num x -> return x 
+        | Var v -> return! getVar v
+        | Add(b,c) ->
+                let! x =  arithEval2 b
+                let! y = arithEval2 c
+                return x + y
+
+        | Mul(b,c) ->
+                let! x =  arithEval2 b
+                let! y = arithEval2 c
+                return x * y
+            
+        | Div(b,c) ->
+                let! x =  arithEval2 b
+                let! y = arithEval2 c
+                if y <> 0 then return x / y
+                else return! fail DivisionByZero
         
+        | Mod(b,c) ->
+                let! x =  arithEval2 b
+                let! y = arithEval2 c
+                if y <> 0 then return x % y
+                else return! fail DivisionByZero
+
+        | MemRead e1 ->
+            let! x = arithEval2 e1
+            let! y = getMem x 
+            return y 
+        | Random -> return! random
+        | Read -> return! readInt()
+        | Cond(b,a1,a2) ->
+           let! bool = boolEval2 b
+           if bool then
+               let! x = arithEval2 a1
+               return x 
+           else
+               let! y = arithEval2 a2
+               return y
+        
+        | FunctionCall _ -> return 0}
+
+           
+    and boolEval2 (b: bexpr) : bool stateMonad = eval{
+        match b with
+        | TT -> return true
+        | Eq(a,c) ->
+            let! x =  arithEval2 a
+            let! y = arithEval2 c
+            return x = y
+        | Lt(a,c) ->
+            let! x =  arithEval2 a
+            let! y = arithEval2 c
+            return x < y
+        | Conj(a,c) ->
+            let! x =  boolEval2 a
+            let! y = boolEval2 c
+            return x && y
+            
+        | Not a ->
+            let! x = boolEval2 a
+            return (not x)
+            }
             
     let split (s1 : string) (s2 : string) = s2 |> s1.Split |> Array.toList
-    let mergeStrings (es : aexpr list) (s : string): Result<string,error> =
-        let s1 = split s "%"
         
-        let rec mergeStringsA (aexprlist : aexpr list) (stringlist : string list) (acc : string list) : Result<string list, error>  =
-            match stringlist with
-                | [] ->  Ok acc
-                | x :: stringlist2 ->
-                    match aexprlist with
-                    | [] -> Ok (List.rev(x :: acc))
-                    | y :: aexprlist2 ->
-                        (arithEval y st) >>= (fun v -> mergeStringsA aexprlist2 stringlist2 (x + string v :: acc))
-                     
-        let result = mergeStringsA es s1 []
-        result |> map (String.concat "")         
-        
-    let mergeStrings2 (es : aexpr list) (s : string) (st : state) : Result<string,error> =
+    let mergeStrings (es : aexpr list) (s : string) =
         let s1 = split s "%"
         
         let rec mergeStringsA (aexprlist : aexpr list) (stringlist : string list) c=
           match stringlist with
-                | [] ->  Ok (c stringlist) 
+                | [] ->  ret (c stringlist) 
                 | x :: stringlist2 ->
                     match aexprlist with
-                    | [] -> Ok (c stringlist)
+                    | [] -> ret (c stringlist)
                     | y :: aexprlist2 ->
-                        (arithEval y st) >>= (fun v -> mergeStringsA aexprlist2 stringlist2 (fun r ->  c (x + string v :: r )))
+                        (arithEval y) >>= (fun v -> mergeStringsA aexprlist2 stringlist2 (fun r ->  c (x + string v :: r )))
                                               
         let result = mergeStringsA es s1 id 
-        result |> map (String.concat "")                 
+        result >>= fun stringlist -> ret (String.concat "" stringlist )                 
         
-       
-           
-    
-    
-    let rec stmntEval s st =
+    let rec stmntEval s =
         match s with
-        | Skip -> ret st
+        | Skip -> ret ()
         | Declare v -> declare v
         | Assign(v,a) ->
-            (arithEval a) >>= (fun x ->setVar v x)
+            (arithEval2 a) >>= (fun x ->setVar v x)
             
         | Seq(s1,s2) ->
-            (stmntEval s1 st) >>= stmntEval s2
+            (stmntEval s1) >>= (fun _ -> stmntEval s2)
      
         | If(guard,s1,s2) ->
-            match boolEval guard with
-            | Ok x ->
-                match x with
-                | true -> stmntEval s1 st 
-                | false -> stmntEval s2 st 
-            | Error e -> Error e 
+            
+            boolEval guard >>= (fun result ->
+                if result
+                then stmntEval s1
+                else stmntEval s2)
             
         | While(guard, s') ->
-            match boolEval guard with
-            | Ok x ->
-                match x with
-                | true ->
-                    (stmntEval s' st) >>= stmntEval(While(guard,s'))
-                | false -> Ok st 
-            | Error e -> Error e
+             boolEval guard >>= (fun result ->
+                if result
+                then (stmntEval s') >>= fun _ -> stmntEval (While(guard,s'))
+                else ret ())
         
         | Alloc(x,e) ->
-            let size = arithEval e st
-            size >>= (fun size -> alloc x size st)
+            let size = arithEval2 e
+            size >>= (fun size -> alloc x size)
             
         | Free (e1,e2) ->
-            let ptr = arithEval e1 st 
-            let size = arithEval e2 st
+            let ptr = arithEval2 e1
+            let size = arithEval2 e2
             
-            ptr >>= (fun ptr2 -> size >>= (fun size2 -> free ptr2 size2 st))
+            ptr >>= (fun ptr2 -> size >>= (fun size2 -> free ptr2 size2))
          
         | MemWrite(e1,e2) ->
-            (arithEval e1 st) >>= (fun x ->
-            (arithEval e2 st ) >>= (fun y ->
-            setMem x y st ))
+            (arithEval2 e1) >>= (fun x ->
+            (arithEval2 e2) >>= (fun y ->
+            setMem x y))
             
         | Print(es, s) ->
-            let check =
-                let evalList = List.map (fun x -> arithEval x st) es //evaluate each aexpr in the list 
-                let rec evaluate lst = // function to check if each aexpr was successfully evaluated
-                    match lst with
-                    | [] -> Ok 1 
-                    | x :: xs ->
-                        x >>= (fun _ -> evaluate xs)
+            let check = 
+                let evalList = List.map arithEval2 es //evaluate each aexpr in the list
                     
+                let rec evaluate lst = // function to check if each aexpr was successfully evaluated
+                   match lst with
+                   | [] -> ret ()
+                   | x :: xs ->
+                            x >>= (fun _ -> evaluate xs)
+                        
                 evaluate evalList
-            
-            match check with
-            | Error e -> Error e
-            | Ok _ ->
-                let vs = List.map (fun x -> match arithEval x st with
-                                            | Ok x -> x
-                                            | _ -> 0) es
-                
-                let percents = s |> String.filter ((=) '%') |> String.length
-                
-                if vs.Length = percents then 
-                    let result = mergeStrings2 es s st
-                    result >>= (fun x -> printfn "%A" x ; Ok st)
-                else Error (IllFormedPrint(s, vs))
+              
+            check >>= (fun _ -> mergeStrings es s >>= fun r -> printfn "%A" r ; ret ())
+        
+        | Return _ -> ret () 

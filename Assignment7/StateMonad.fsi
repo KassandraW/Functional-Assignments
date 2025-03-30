@@ -26,7 +26,7 @@ module Interpreter.StateMonad
     val setMem : int -> int -> unit stateMonad
     val getMem : int -> int stateMonad
     val random : int stateMonad
-    val evalState : 'a stateMonad -> state -> Result<'a,error>
+    val evalState : state -> 'a stateMonad -> Result<'a,error>
 
 
     

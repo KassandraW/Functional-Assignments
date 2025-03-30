@@ -46,7 +46,7 @@ module Interpreter.StateMonad
         SM ( fun st -> Ok(random st,st))
     
     
-    let evalState (a: 'a stateMonad) (st : state)  =
+    let evalState  (st : state) (a: 'a stateMonad) =
         match a with
         | SM b -> //unwrap that thang
             b st =>> (fun (v,_)  -> Ok(v))
