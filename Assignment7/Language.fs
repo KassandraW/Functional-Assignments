@@ -22,7 +22,7 @@ type aexpr =
     | Mod of aexpr * aexpr
     | MemRead of aexpr
     | Cond of bexpr * aexpr * aexpr
-    | FunctionCall of string * aexpr list
+    //| FunctionCall of string * aexpr list
     | Random
     | Read
     

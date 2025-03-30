@@ -44,13 +44,8 @@ module Interpreter.Eval
         | Random -> random
         | Read -> readInt()
         | Cond(b,a1,a2) ->
-           match boolEval b with
-           | Ok true ->
-               arithEval a1 
-           | Ok false -> 
-              arithEval a2 
-           | Error e -> 
-               
+           boolEval b >>= (fun bool -> if bool then arithEval a1 else arithEval a2)
+           
     and boolEval (b: bexpr) : bool stateMonad =
         match b with
         | TT -> ret true
@@ -110,16 +105,16 @@ module Interpreter.Eval
     
     let rec stmntEval s st =
         match s with
-        | Skip -> Ok st
-        | Declare v -> declare v st
+        | Skip -> ret st
+        | Declare v -> declare v
         | Assign(v,a) ->
-            (arithEval a st) >>= (fun x ->setVar v x st)
+            (arithEval a) >>= (fun x ->setVar v x)
             
         | Seq(s1,s2) ->
             (stmntEval s1 st) >>= stmntEval s2
      
         | If(guard,s1,s2) ->
-            match boolEval guard st with
+            match boolEval guard with
             | Ok x ->
                 match x with
                 | true -> stmntEval s1 st 
@@ -127,7 +122,7 @@ module Interpreter.Eval
             | Error e -> Error e 
             
         | While(guard, s') ->
-            match boolEval guard st with
+            match boolEval guard with
             | Ok x ->
                 match x with
                 | true ->
