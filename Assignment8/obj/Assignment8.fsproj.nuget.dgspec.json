@@ -1,0 +1,75 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\kassa\\Desktop\\uni\\4_semester\\Functional-Assignments\\Assignment8\\Assignment8.fsproj": {}
+  },
+  "projects": {
+    "C:\\Users\\kassa\\Desktop\\uni\\4_semester\\Functional-Assignments\\Assignment8\\Assignment8.fsproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\kassa\\Desktop\\uni\\4_semester\\Functional-Assignments\\Assignment8\\Assignment8.fsproj",
+        "projectName": "Assignment8",
+        "projectPath": "C:\\Users\\kassa\\Desktop\\uni\\4_semester\\Functional-Assignments\\Assignment8\\Assignment8.fsproj",
+        "packagesPath": "C:\\Users\\kassa\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\kassa\\Desktop\\uni\\4_semester\\Functional-Assignments\\Assignment8\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\kassa\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Users\\kassa\\.dotnet\\sdk\\9.0.100\\FSharp\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "all"
+        }
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "FParsec": {
+              "target": "Package",
+              "version": "[1.1.1, )",
+              "generatePathProperty": true
+            },
+            "FSharp.Core": {
+              "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
+              "target": "Package",
+              "version": "[9.0.100, )",
+              "generatePathProperty": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Users\\kassa\\.dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
