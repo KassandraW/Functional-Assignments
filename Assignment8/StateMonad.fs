@@ -5,37 +5,55 @@ module Interpreter.StateMonad
     
     open State
     open Language
-    
-    // Green exercises
-    
-    type 'a stateMonad = SM of (state -> ('a * state) option)
-        
-    let ret x= SM (fun st -> Some(x, st))
-    let fail    = SM (fun _ -> None)
-    
-    let bind (SM f) g =
-        SM (fun st ->
-            match f st with
-            | Some (x, st') -> let (SM h) = g x in h st'
-            | None -> None)
-        
-    
-    
-    
-    // Yellow exercises
-    
-    (*
+    let (=>>) x f = x |> Result.bind f 
     type 'a stateMonad = SM of (state -> Result<'a * state, error>)
         
     let ret x      = SM (fun st -> Ok(x, st))
     let fail err= SM (fun _ -> Error err)
     
     let bind (SM f) g =
-        SM (fun st ->
+        SM (fun st -> 
             match f st with
             | Ok (x, st') -> let (SM h) = g x in h st'
             | Error err   -> Error err) 
-    *)
+    
+    let declare str  : unit stateMonad =
+        SM (fun st ->  declare str st =>> (fun newSt  -> Ok((),newSt)))
+            //match declare str st with
+            //| Ok newSt -> Ok((), newSt) how all my functions looked before I used Result.bind. I keep forgetting bind.
+            //| Error err   -> Error err)
+        
+    let setVar str (v:int) : unit stateMonad =
+        SM (fun st -> setVar str v st =>> (fun newSt  -> Ok((),newSt)))
+        
+    let getVar str: int stateMonad =
+        SM (fun st -> getVar str st =>> (fun value -> Ok(value,st)))
+    
+    let alloc str size : unit stateMonad =
+        SM (fun st -> alloc str size st =>> (fun newSt  -> Ok((),newSt)))
+       
+    let free ptr size : unit stateMonad =
+        SM (fun st -> free ptr size st =>> (fun newSt  -> Ok((),newSt)))
+        
+    let setMem ptr v : unit stateMonad =
+        SM (fun st -> setMem ptr v st =>> (fun newSt  -> Ok((),newSt)))
+        
+    let getMem ptr: int stateMonad =
+        SM (fun st -> getMem ptr st  =>> (fun value -> Ok(value,st)))
+       
+        
+    let random : int stateMonad =
+        SM ( fun st -> Ok(random st,st))
+    
+    
+    let evalState  (st : state) (a: 'a stateMonad) =
+        match a with
+        | SM b -> //unwrap that thang
+            b st =>> (fun (v,_)  -> Ok(v))
+
+        
+    
+    
     
     // Red Green exercises
     (*
@@ -131,20 +149,3 @@ module Interpreter.StateMonad
     
     let (>>=) a f = bind a f
     let (>>>=) a b = a >>= (fun _ -> b)
-
-    let random _ = failwith "not implemented"
-    
-    let declare _ = failwith "not implemented"
-    
-    let getVar _ = failwith "not implemented"
-    let setVar _ = failwith "not implemented"
-    
-    let alloc _ = failwith "not implemented"
-    let free _ = failwith "not implemented"
-    let getMem _ = failwith "not implemented"
-    let setMem _ = failwith "not implemented"
-    
-    let push _ = failwith "not implemented"
-    let pop _ = failwith "not implemented"
-    
-    let evalState _ = failwith "not implemented"
