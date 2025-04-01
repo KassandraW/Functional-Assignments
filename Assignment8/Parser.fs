@@ -13,33 +13,35 @@
     // open FParsecLight.TextParser     // Industrial parser-combinator library. Use if performance gets bad
     
 
-    let pif       : Parser<string> = pstring "not implemented"
-    let pelse     : Parser<string> = pstring "not implemented"
-    let palloc    : Parser<string> = pstring "not implemented"
-    let pfree     : Parser<string> = pstring "not implemented"
-    let pwhile    : Parser<string> = pstring "not implemented"
-    let pdo       : Parser<string> = pstring "not implemented"
-    let pdeclare  : Parser<string> = pstring "not implemented"
-    let ptrue     : Parser<string> = pstring "not implemented"
-    let pfalse    : Parser<string> = pstring "not implemented"
-    let pprint    : Parser<string> = pstring "not implemented"
-    let prandom   : Parser<string> = pstring "not implemented"
-    let pread     : Parser<string> = pstring "not implemented"
-    let pfunction : Parser<string> = pstring "not implemented"
-    let pret      : Parser<string> = pstring "not implemented"
+    let pif       : Parser<string> = pstring "if"
+    let pelse     : Parser<string> = pstring "else"
+    let palloc    : Parser<string> = pstring "alloc"
+    let pfree     : Parser<string> = pstring "free"
+    let pwhile    : Parser<string> = pstring "while"
+    let pdo       : Parser<string> = pstring "do"
+    let pdeclare  : Parser<string> = pstring "declare"
+    let ptrue     : Parser<string> = pstring "true"
+    let pfalse    : Parser<string> = pstring "false"
+    let pprint    : Parser<string> = pstring "print"
+    let prandom   : Parser<string> = pstring "random"
+    let pread     : Parser<string> = pstring "read"
+    let pfunction : Parser<string> = pstring "function"
+    let pret      : Parser<string> = pstring "ret"
     
-    let pwhitespaceChar = pchar '_' // not implemented
-    let pletter         = pchar '_' // not implemented
-    let palphanumeric   = pchar '_' // not implemented
+    let pwhitespaceChar = satisfy System.Char.IsWhiteSpace
+    let pletter         = satisfy System.Char.IsLetter
+    let palphanumeric   = satisfy System.Char.IsLetterOrDigit
 
-    let spaces         = pchar '_' |>> fun x -> [x]
-    let spaces1        = pchar '_' |>> fun x -> [x]
+    let spaces         = many pwhitespaceChar
+    let spaces1        = many1 pwhitespaceChar
 
-    let (.>*>.) _ _ = failwith "not implemented"
-    let (.>*>) _ _  = failwith "not implemented"
-    let (>*>.) _ _  = failwith "not implemented"
+    let (.>*>.) p1 p2 = (p1 .>> spaces) .>>. p2 
+    let (.>*>) p1 p2  = (p1 .>> spaces) .>> p2 
+    let (>*>.) p1 p2  = (p1 .>> spaces) >>. p2 
 
-    let parenthesise p = p // incorrect (not implemented)
+    let parenthesise p = pchar '(' >*>. p .>*> pchar ')'
+    
+    let curlybrackets p = pchar '{' >*>. p .>*> pchar '}'  
     let parseString= pstring "not implemented"
 
     let pid = pstring "not implemented"
