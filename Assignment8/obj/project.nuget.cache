@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "f4TkutL6c9E=",
+  "dgSpecHash": "vLqa7zdwwdg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\kassa\\Desktop\\uni\\4_semester\\Functional-Assignments\\Assignment8\\Assignment8.fsproj",
+  "projectFilePath": "C:\\Users\\kassa\\Desktop\\Functional-Assignments\\Assignment8\\Assignment8.fsproj",
   "expectedPackageFiles": [
     "C:\\Users\\kassa\\.nuget\\packages\\fparsec\\1.1.1\\fparsec.1.1.1.nupkg.sha512",
-    "C:\\Users\\kassa\\.nuget\\packages\\fsharp.core\\9.0.100\\fsharp.core.9.0.100.nupkg.sha512"
+    "C:\\Users\\kassa\\.nuget\\packages\\fsharp.core\\9.0.201\\fsharp.core.9.0.201.nupkg.sha512"
   ],
   "logs": []
 }
