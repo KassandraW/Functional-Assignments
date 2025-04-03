@@ -44,15 +44,10 @@
     let curlybrackets p = pchar '{' >*>. p .>*> pchar '}'  
     let parseString= pstring "not implemented"
     
-    let rec charListToString (lst: char list) :string =
-        let rec loop aList c =
-            match aList with
-            | [] -> c ""
-            | x :: xs -> loop xs (fun r -> c (string x + r ))
-            
-        loop lst id 
+    let charListToString (lst: char list ) =
+        lst |> List.toArray |> System.String
 
-    let pid = pletter <|> pchar '_' .>>. many palphanumeric
+    let pid = pletter <|> pchar '_' .>>. many palphanumeric |>> (fun (x,y) -> x :: y |>  charListToString)
 
     
     let unop _ = failwith "not implemented"
