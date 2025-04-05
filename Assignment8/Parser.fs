@@ -15,7 +15,7 @@
 
     let pif       : Parser<string> = pstring "if"
     let pelse     : Parser<string> = pstring "else"
-    let palloc    : Parser<string> = pstring "alloc"
+    let palloc : Parser<string> = pstring "alloc"
     let pfree     : Parser<string> = pstring "free"
     let pwhile    : Parser<string> = pstring "while"
     let pdo       : Parser<string> = pstring "do"
@@ -41,27 +41,30 @@
 
     let parenthesise p = pchar '(' >*>. p .>*> pchar ')'
     
-    let curlybrackets p = pchar '{' >*>. p .>*> pchar '}'  
-    let parseString= pstring "not implemented"
+    let curlybrackets p = pchar '{' >*>. p .>*> pchar '}'
     
     let charListToString (lst: char list ) =
         lst |> List.toArray |> System.String
+        
+    let parseString =
+        pchar '"' >*>. many (satisfy(fun char -> char <> '"')) |>> charListToString
+    
 
-    let pid = pletter <|> pchar '_' .>>. many palphanumeric |>> (fun (x,y) -> x :: y |>  charListToString)
+    let pid = pletter <|> pchar '_' .>>. many (palphanumeric <|> pchar '_')  |>> (fun (x,xs) -> x :: xs |>  charListToString)
 
     
-    let unop _ = failwith "not implemented"
-    let binop _ = failwith "not implemented"
+    //let unop _ = failwith "not implemented"
+    //let binop _ = failwith "not implemented"
 
     let TermParse, tref = createParserForwardedToRef<aexpr>()
     let ProdParse, pref = createParserForwardedToRef<aexpr>()
     let AtomParse, aref = createParserForwardedToRef<aexpr>()
 
-    let AddParse = binop (pchar '+') ProdParse TermParse |>> Add <?> "Add"
-    do tref := choice [AddParse; ProdParse]
+    //let AddParse = binop (pchar '+') ProdParse TermParse |>> Add <?> "Add"
+    //do tref := choice [AddParse; ProdParse]
 
-    let MulParse = binop (pchar '*') AtomParse ProdParse |>> Mul <?> "Mul"
-    do pref := choice [MulParse; AtomParse]
+    //let MulParse = binop (pchar '*') AtomParse ProdParse |>> Mul <?> "Mul"
+    //do pref := choice [MulParse; AtomParse]
 
     let NParse   = pint32 |>> Num <?> "Int"
     let ParParse = parenthesise TermParse
