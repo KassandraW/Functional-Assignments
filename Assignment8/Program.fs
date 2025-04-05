@@ -25,7 +25,7 @@ let main _ =
                      (m |> Map.tryFind "--seed")
                      prog)) |>
     printfn "\n\n%A" *)
-    printfn "%A" (run parseString "\"hel\tlo\"") 
+    printfn "%A" (run (binop (pchar '+') pint32 pint32 |>> (fun (a, b) -> a + b)) "5 +  7") 
     0
     
     

@@ -53,18 +53,18 @@
     let pid = pletter <|> pchar '_' .>>. many (palphanumeric <|> pchar '_')  |>> (fun (x,xs) -> x :: xs |>  charListToString)
 
     
-    //let unop _ = failwith "not implemented"
-    //let binop _ = failwith "not implemented"
+    let unop op a = op >*>. a 
+    let binop op a b = a .>*> op .>*>. b
 
     let TermParse, tref = createParserForwardedToRef<aexpr>()
     let ProdParse, pref = createParserForwardedToRef<aexpr>()
     let AtomParse, aref = createParserForwardedToRef<aexpr>()
 
-    //let AddParse = binop (pchar '+') ProdParse TermParse |>> Add <?> "Add"
-    //do tref := choice [AddParse; ProdParse]
+    let AddParse = binop (pchar '+') ProdParse TermParse |>> Add <?> "Add"
+    do tref := choice [AddParse; ProdParse]
 
-    //let MulParse = binop (pchar '*') AtomParse ProdParse |>> Mul <?> "Mul"
-    //do pref := choice [MulParse; AtomParse]
+    let MulParse = binop (pchar '*') AtomParse ProdParse |>> Mul <?> "Mul"
+    do pref := choice [MulParse; AtomParse]
 
     let NParse   = pint32 |>> Num <?> "Int"
     let ParParse = parenthesise TermParse
