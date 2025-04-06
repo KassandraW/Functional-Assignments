@@ -41,13 +41,13 @@
 
     let parenthesise p = pchar '(' >*>. p .>*> pchar ')'
     
-    let curlybrackets p = pchar '{' >*>. p .>*> pchar '}'
+    let squareBrackets p = pchar '[' >*>. p .>*> pchar ']'
     
     let charListToString (lst: char list ) =
         lst |> List.toArray |> System.String
         
     let parseString =
-        pchar '"' >*>. many (satisfy(fun char -> char <> '"')) |>> charListToString
+        pchar '"' >*>. many (satisfy(fun char -> char <> '"')) .>*> pchar '"' |>> charListToString // >:[[[[
     
 
     let pid = pletter <|> pchar '_' .>>. many (palphanumeric <|> pchar '_')  |>> (fun (x,xs) -> x :: xs |>  charListToString)
@@ -59,18 +59,27 @@
     let TermParse, tref = createParserForwardedToRef<aexpr>()
     let ProdParse, pref = createParserForwardedToRef<aexpr>()
     let AtomParse, aref = createParserForwardedToRef<aexpr>()
-
+    
+    //Level 2
     let AddParse = binop (pchar '+') ProdParse TermParse |>> Add <?> "Add"
-    do tref := choice [AddParse; ProdParse]
-
+    let MinParse = binop (pchar '-') ProdParse TermParse |>> (fun (a,b) -> a .-. b) <?> "Subtract"
+    do tref := choice [AddParse; MinParse; ProdParse]
+    
+    //Level 3
     let MulParse = binop (pchar '*') AtomParse ProdParse |>> Mul <?> "Mul"
-    do pref := choice [MulParse; AtomParse]
-
+    let DivParse = binop (pchar '/' ) AtomParse ProdParse |>> Div <?> "Div"
+    let ModParse = binop (pchar '%' ) AtomParse ProdParse |>> Mod <?> "Mod"
+    do pref := choice [MulParse; DivParse; ModParse; AtomParse]
+    
+    
+    //Level 4
+    let NegParse = unop (pchar '-') TermParse |>> (fun x -> Mul(x, Num -1) ) <?> "Negative"
     let NParse   = pint32 |>> Num <?> "Int"
     let ParParse = parenthesise TermParse
-    do aref := choice [NParse; ParParse]
+    let BrackParse = squareBrackets TermParse 
+    do aref := choice [NegParse; NParse; ParParse; BrackParse]
 
-    let paexpr = pstring "not implemented" |>> (fun _ -> Num 42)
+    let paexpr = TermParse
 
     let pbexpr = pstring "not implemented" |>> (fun _ -> TT)
 
