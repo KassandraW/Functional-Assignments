@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net7.0": {
-      "FSharp.Core/9.0.100": {
+      "FSharp.Core/9.0.201": {
         "type": "package",
         "compile": {
           "lib/netstandard2.1/FSharp.Core.dll": {
@@ -59,15 +59,15 @@
     }
   },
   "libraries": {
-    "FSharp.Core/9.0.100": {
-      "sha512": "ye8yagHGsH08H2Twno5GRWkSbrMtxK/SWiHuPcF+3nODpW65/VJ8RO0aWxp8n9+KQbmahg90wAEL3TEXjF0r6A==",
+    "FSharp.Core/9.0.201": {
+      "sha512": "Ozq4T0ISTkqTYJ035XW/JkdDDaXofbykvfyVwkjLSqaDZ/4uNXfpf92cjcMI9lf9CxWqmlWHScViPh/4AvnWcw==",
       "type": "package",
-      "path": "fsharp.core/9.0.100",
+      "path": "fsharp.core/9.0.201",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "Icon.png",
-        "fsharp.core.9.0.100.nupkg.sha512",
+        "fsharp.core.9.0.201.nupkg.sha512",
         "fsharp.core.nuspec",
         "lib/netstandard2.0/FSharp.Core.dll",
         "lib/netstandard2.0/FSharp.Core.xml",
@@ -104,29 +104,37 @@
   },
   "projectFileDependencyGroups": {
     "net7.0": [
-      "FSharp.Core >= 9.0.100"
+      "FSharp.Core >= 9.0.201"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\kassa\\.nuget\\packages\\": {}
+    "C:\\Users\\kassa\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kassa\\Desktop\\uni\\4_semester\\Functional-Assignments\\Assignment7\\Assignment7.fsproj",
+      "projectUniqueName": "C:\\Users\\kassa\\Desktop\\Functional-Assignments\\Assignment7\\Assignment7.fsproj",
       "projectName": "Assignment7",
-      "projectPath": "C:\\Users\\kassa\\Desktop\\uni\\4_semester\\Functional-Assignments\\Assignment7\\Assignment7.fsproj",
+      "projectPath": "C:\\Users\\kassa\\Desktop\\Functional-Assignments\\Assignment7\\Assignment7.fsproj",
       "packagesPath": "C:\\Users\\kassa\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\kassa\\Desktop\\uni\\4_semester\\Functional-Assignments\\Assignment7\\obj\\",
+      "outputPath": "C:\\Users\\kassa\\Desktop\\Functional-Assignments\\Assignment7\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "C:\\Users\\kassa\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\kassa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "C:\\Users\\kassa\\.dotnet\\sdk\\9.0.100\\FSharp\\library-packs": {},
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
+        "C:\\Program Files\\dotnet\\sdk\\9.0.200\\FSharp\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -138,8 +146,9 @@
       "restoreAuditProperties": {
         "enableAudit": "true",
         "auditLevel": "low",
-        "auditMode": "all"
-      }
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net7.0": {
@@ -148,7 +157,7 @@
           "FSharp.Core": {
             "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
             "target": "Package",
-            "version": "[9.0.100, )",
+            "version": "[9.0.201, )",
             "generatePathProperty": true
           }
         },
@@ -163,30 +172,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[7.0.20, 7.0.20]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Host.win-x64",
-            "version": "[7.0.20, 7.0.20]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Ref",
-            "version": "[7.0.20, 7.0.20]"
-          },
-          {
-            "name": "Microsoft.WindowsDesktop.App.Ref",
-            "version": "[7.0.20, 7.0.20]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Users\\kassa\\.dotnet\\sdk\\9.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200\\RuntimeIdentifierGraph.json"
       }
     }
   }

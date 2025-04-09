@@ -25,7 +25,7 @@ let main _ =
                      (m |> Map.tryFind "--seed")
                      prog)) |>
     printfn "\n\n%A" *)
-    printfn "%A" (run paexpr "[4]") 
+    printfn "%A" (run pbexpr "5 > 4 \/ 3 >= 7 \/ x <> y") 
     0
     
     

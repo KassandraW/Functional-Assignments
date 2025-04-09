@@ -1,5 +1,6 @@
 ﻿module Interpreter.Parser
 
+    open FParsec
     open Interpreter.Language
 
     (*
@@ -10,7 +11,7 @@
     *)
 
     open JParsec.TextParser             // Example parser combinator library.
-    // open FParsecLight.TextParser     // Industrial parser-combinator library. Use if performance gets bad
+    //open FParsecLight.TextParser     // Industrial parser-combinator library. Use if performance gets bad
     
 
     let pif       : Parser<string> = pstring "if"
@@ -56,9 +57,19 @@
     let unop op a = op >*>. a 
     let binop op a b = a .>*> op .>*>. b
 
+    let ConddParse, cref = createParserForwardedToRef<aexpr>()
     let TermParse, tref = createParserForwardedToRef<aexpr>()
     let ProdParse, pref = createParserForwardedToRef<aexpr>()
     let AtomParse, aref = createParserForwardedToRef<aexpr>()
+    
+    let BTermParse, btref = createParserForwardedToRef<bexpr>()
+    let BProdParse, bpref = createParserForwardedToRef<bexpr>()
+   
+    
+    //level 1
+    //Conditional B1 ? A1 : A1
+    //let CondParse =
+    //do cref := choice [CondParse, BTermParse]
     
     //Level 2
     let AddParse = binop (pchar '+') ProdParse TermParse |>> Add <?> "Add"
@@ -73,15 +84,42 @@
     
     
     //Level 4
-    let NegParse = unop (pchar '-') TermParse |>> (fun x -> Mul(x, Num -1) ) <?> "Negative"
+    let NegParse = unop (pchar '-') TermParse |>> (fun x -> Mul(Num -1, x) ) <?> "Negative"
     let NParse   = pint32 |>> Num <?> "Int"
     let ParParse = parenthesise TermParse
-    let BrackParse = squareBrackets TermParse 
-    do aref := choice [NegParse; NParse; ParParse; BrackParse]
+    let BrackParse = squareBrackets TermParse |>> MemRead 
+    let ReadParse = pread |>> fun _ -> Read
+    let RandomParse = prandom |>> fun _ -> Random
+    let VParse = pid |>> fun x -> Var x 
+    
+    do aref := choice [NegParse; NParse; ParParse; BrackParse; ReadParse; VParse]
+    
+
+    
+    
+    //Level 1
+    let ConjParse = binop (pstring "/\\") BProdParse BTermParse |>> Conj
+    let DisjParse = binop (pstring "\\/") BProdParse BTermParse |>> fun (x,y) -> Not(Conj(Not x, Not y))
+    do btref := choice [ConjParse; DisjParse; BProdParse]
+    
+    //level 2
+    let TrueParse = ptrue |>> fun _ -> TT
+    let FalseParse = pfalse |>> fun _ -> Not TT
+    let NotParse = unop (pchar '~') BProdParse |>> fun x -> Not x
+    let EqualParse = binop (pchar '=') ProdParse TermParse |>> Eq
+    let InequalParse = binop (pstring "<>") ProdParse TermParse |>> fun(x,y) -> Not(Eq(x,y))
+    let SmallerThanParse = binop (pchar '<') ProdParse TermParse |>> Lt
+    let SmallerOrEqualParse = binop (pstring "<=") ProdParse TermParse |>> fun(x,y) -> x .<=. y 
+    let GreaterThanParse = binop (pchar '>') ProdParse TermParse |>> fun (x,y) -> x .>. y
+    let GreaterOrEqualParse = binop (pstring ">=") ProdParse TermParse |>> fun(x,y) -> x .>=. y 
+    let BParParse = parenthesise BTermParse
+    
+    do bpref := choice [TrueParse; FalseParse; NotParse; EqualParse; InequalParse; SmallerThanParse
+                        SmallerOrEqualParse; GreaterThanParse; GreaterOrEqualParse; BParParse; BTermParse]
 
     let paexpr = TermParse
 
-    let pbexpr = pstring "not implemented" |>> (fun _ -> TT)
+    let pbexpr = BTermParse
 
     let pstmnt = pstring "not implemented" |>> (fun _ -> Skip)
     
