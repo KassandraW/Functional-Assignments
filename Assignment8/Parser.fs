@@ -1,6 +1,8 @@
 ﻿module Interpreter.Parser
 
     open FParsec
+    open Interpreter.FParsecLight.TextParser
+    open Interpreter.JParsec.TextParser
     open Interpreter.Language
 
     (*
@@ -43,6 +45,7 @@
     let parenthesise p = pchar '(' >*>. p .>*> pchar ')'
     
     let squareBrackets p = pchar '[' >*>. p .>*> pchar ']'
+    let curlyBrackets p = pchar '{' >*>. p .>*> pchar '}'
     
     let charListToString (lst: char list ) =
         lst |> List.toArray |> System.String
@@ -63,6 +66,8 @@
     let AtomParse, aref = createParserForwardedToRef<aexpr>()
     let BTermParse, btref = createParserForwardedToRef<bexpr>()
     let BProdParse, bpref = createParserForwardedToRef<bexpr>()
+    let S1, s1ref = createParserForwardedToRef<stmnt>()
+    let S2, s2ref = createParserForwardedToRef<stmnt>()
    
     
     //level 1
@@ -85,11 +90,11 @@
     //Level 4
     let NegParse = unop (pchar '-') TermParse |>> (fun x -> Mul(Num -1, x) ) <?> "Negative"
     let NParse   = pint32 |>> Num <?> "Int"
-    let ParParse = parenthesise CondParse
-    let BrackParse = squareBrackets CondParse |>> MemRead 
-    let ReadParse = pread |>> fun _ -> Read
-    let RandomParse = prandom |>> fun _ -> Random
-    let VParse = pid |>> fun x -> Var x 
+    let ParParse = parenthesise CondParse <?> "Parenthesis"
+    let BrackParse = squareBrackets CondParse |>> MemRead  <?> "Read Memory"
+    let ReadParse = pread |>> (fun _ -> Read) <?> "Read"
+    let RandomParse = prandom |>> (fun _ -> Random) <?> "Random"
+    let VParse = pid |>> (fun x -> Var x) <?> "Var" 
     
     do aref := choice [NegParse; NParse; ParParse; BrackParse; ReadParse; RandomParse; VParse]
     
@@ -97,16 +102,16 @@
     
     //B
     //Level 1
-    let ConjParse = binop (pstring "/\\") BProdParse BTermParse |>> Conj
-    let DisjParse = binop (pstring "\\/") BProdParse BTermParse |>> fun (x,y) -> Not(Conj(Not x, Not y))
+    let ConjParse = binop (pstring "/\\") BProdParse BTermParse |>> Conj <?> "Conjunction"
+    let DisjParse = binop (pstring "\\/") BProdParse BTermParse |>> (fun (x,y) -> x .||. y) <?> "Disjunction"
     do btref := choice [ConjParse; DisjParse; BProdParse]
     
     //level 2
     let TrueParse = ptrue |>> fun _ -> TT
-    let FalseParse = pfalse |>> fun _ -> Not TT
+    let FalseParse = pfalse |>> fun _ -> FF
     let NotParse = unop (pchar '~') BProdParse |>> fun x -> Not x
     let EqualParse = binop (pchar '=') TermParse CondParse |>> Eq
-    let InequalParse = binop (pstring "<>") TermParse CondParse |>> fun(x,y) -> Not(Eq(x,y))
+    let InequalParse = binop (pstring "<>") TermParse CondParse |>> fun(x,y) -> x .<>. y
     let SmallerThanParse = binop (pchar '<') TermParse CondParse |>> Lt
     let SmallerOrEqualParse = binop (pstring "<=") TermParse CondParse |>> fun(x,y) -> x .<=. y 
     let GreaterThanParse = binop (pchar '>') TermParse CondParse |>> fun (x,y) -> x .>. y
@@ -116,11 +121,27 @@
     do bpref := choice [TrueParse; FalseParse; NotParse; EqualParse; InequalParse; SmallerThanParse
                         SmallerOrEqualParse; GreaterThanParse; GreaterOrEqualParse; BParParse]
 
+    //S1
+    let sequence = binop (pchar ';') S2 S1 |>> Seq <?> "Sequence"
+    do s1ref := choice [sequence; S2]
+   
+    //S2
+    let assign = pid .>*> pstring ":=" .>*>. CondParse |>> Assign
+    let declare = pdeclare >>. pwhitespaceChar >>. pid |>> Declare
+    let ifElse = pif >*>. parenthesise BTermParse .>*>. curlyBrackets S1 .>*> pelse .>*>. curlyBrackets S1 |>> (fun ((b1,s1),s2) -> If(b1,s1,s2))
+    let sif = pif >*>. parenthesise BTermParse .>*>. curlyBrackets S1 |>> (fun(b1,s1) -> If(b1,s1,Skip))
+    let swhile = pwhile >*>. parenthesise BTermParse .>*>. curlyBrackets S1 |>> While <?> "While"
+    let alloc = palloc >>. parenthesise(pid .>> pchar ',' .>*>. CondParse) |>> Alloc
+    let free = pfree >>. parenthesise(CondParse .>> pchar ',' .>*>. CondParse) |>> Free
+    let print = pprint >>. parenthesise(parseString .>*>. many1 (pchar ',' >*>. CondParse)) |>> (fun(s,list) -> Print(list,s))
+    let memwrite = squareBrackets CondParse .>*> pstring ":=" .>*>. CondParse |>> MemWrite
+    
+    do s2ref := choice [assign; declare; ifElse; sif; swhile; alloc; free; print; memwrite]
     let paexpr = CondParse
 
     let pbexpr = BTermParse
 
-    let pstmnt = pstring "not implemented" |>> (fun _ -> Skip)
+    let pstmnt = S1
     
     let pprogram = pstmnt |>> (fun s -> (Map.empty : program), s)
     
