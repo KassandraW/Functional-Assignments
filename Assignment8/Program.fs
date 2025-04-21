@@ -2,6 +2,7 @@
 open Interpreter
 open Interpreter.Parser
 open JParsec.TextParser
+open FParsec 
 
 let rec parseArgs =
     function
@@ -25,7 +26,9 @@ let main _ =
                      (m |> Map.tryFind "--seed")
                      prog)) |>
     printfn "\n\n%A" *)
-    printfn "%A" (run pbexpr "5 > 4 \/ 3 >= 7 \/ x <> y") 
+    printfn "%A" (run paexpr "a < b ? c < d ? x : 7 : e < f ? 27 * x : 42") 
     0
+    
+    //"[5 / y % 0] * (a < b ? 27 : x)"
     
     
