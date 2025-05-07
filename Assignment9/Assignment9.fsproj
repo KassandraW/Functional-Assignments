@@ -8,9 +8,9 @@
     <ItemGroup>
       <Compile Include="Language.fs" />
       <Compile Include="State.fsi" />
+      <Compile Include="Memory.fsi" />
       <Compile Include="Program.fs" />
       <Compile Include="Eval.fs" />
-      <Compile Include="Memory.fsi" />
       <Compile Include="Parser.fs" />
       <Compile Include="Programs.fs" />
       <Compile Include="FParsecLight.fsi" />
