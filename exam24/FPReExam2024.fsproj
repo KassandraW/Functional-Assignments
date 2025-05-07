@@ -10,5 +10,6 @@
     <Compile Include="JParsec.fs" />
     <Compile Include="Exam.fs" />
     <Compile Include="Program.fs" />
+    <Content Include="ReExam.pdf" />
   </ItemGroup>
 </Project>
