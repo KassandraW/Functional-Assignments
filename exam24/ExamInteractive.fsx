@@ -7,6 +7,8 @@
    Some IDEs may still complain about the path, place the full path here if that is the case.
 *)
 
-#load "JParsec.fs"
-#load "Exam.fs"
+#load "JParsec.fs";;
+#load "Exam.fs";;
 open Exam2024;;
+
+
