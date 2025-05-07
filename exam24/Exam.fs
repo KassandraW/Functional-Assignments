@@ -33,15 +33,37 @@ open System
         | Empty
         | AddShape of shape * shape * shapeList
         
-    let area _ = failwith "not implemented"
+    let area (s : shape) : float  =
+        match s with
+        | Rectangle(w,h) -> w * h 
+        | Circle(r) -> Math.PI * r * r
+        | Triangle(b,h) ->  (b*h)/2.0 
     
-    let circumference _ = failwith "not implemented"        
+    let circumference (s : shape) : float =
+        match s with
+        | Rectangle(w,h) -> 2.0 * w + 2.0 * h 
+        | Circle(r) -> Math.PI * r * 2.0
+        | Triangle(b,h) ->  b + h + Math.Sqrt(b*b + h*h)
         
-    let totalArea _ = failwith "not implemented"
+    let rec totalArea (sl : shapeList) : float =
+        match sl with
+        | Empty -> 0.0
+        | AddShape(s1,s2,shapeList) -> area s1 + area s2 + totalArea(shapeList)
         
-    let totalCircumference _ = failwith "not implemented"
+    let totalCircumference (sl : shapeList) : float =
+        let rec aux acc sl2 : float =
+            match sl2 with
+            | Empty -> acc
+            | AddShape(s1,s2,shapeList) -> aux (acc + circumference s1 + circumference s2) shapeList
         
-    let shapeListFold  _ = failwith "not implemented"
+        aux 0.0 sl 
+        
+    let rec shapeListFold  (f : 'a -> shape -> 'a) (acc : 'a) (sl : shapeList) =
+        match sl with
+        | Empty -> acc
+        | AddShape(s1,s2,rest) -> shapeListFold f (f (f acc s1 ) s2) rest 
+       
+        
 
     let isCircle =
         function
@@ -51,9 +73,11 @@ open System
     let containsCircle trs = 
         shapeListFold (fun acc c -> acc || isCircle c) false trs
         
-    let totalArea2 _ = failwith "not implemented"
+    let totalArea2 (sl : shapeList) : float =
+        shapeListFold (fun acc shape -> acc + area shape) 0.0 sl
 
-    let totalCircumference2 _ = failwith "not implemented"
+    let totalCircumference2 (sl : shapeList) : float =
+        shapeListFold (fun acc shape -> acc + circumference shape) 0.0 sl 
     
 (* 2: Code Comprehension *)
         
@@ -62,6 +86,9 @@ open System
         | c when Char.IsWhiteSpace c -> c 
         | c when c > 'w'             -> char (int c - 23)
         | c when c < 'x'             -> char (int c + 3)
+        
+    
+        
         
     let bar (str : string) = [for c in str -> c]
     
@@ -72,6 +99,7 @@ open System
             | c :: cs -> string (foo c) + (aux cs)
             
         aux (bar str)
+        
     
 (* Question 2.1 *)
 
@@ -79,27 +107,36 @@ open System
     
     Q: What are the types of functions foo, bar, and baz?
 
-    A: <Your answer goes here>
+    A: foo: char -> char
+       bar: string -> char list
+       baz: string -> string 
 
     Q: What do the function foo, bar, and baz do.
        Focus on what they do rather than how they do it.
 
-    A: <Your answer goes here>
+    A: bar turns a given string into a character list. foo encrypts a character by offsetting it with 3.
+        baz takes a given string and encrypts it.
     
     Q: What would be appropriate names for functions 
        foo, bar, and baz?
 
-    A: <Your answer goes here>
+    A: Bar = stringToCharList
+       foo = encryptChar
+       baz = encryptString
         
 *)
     
 (* Question 2.2 *)
-
-    let foo2 _ = failwith "not implemented"
+    let foo2 =
+        function
+        | c when Char.IsWhiteSpace c -> c 
+        | c when c > 'w'             -> char (int c - 23)
+        | c when c < 'x'             -> char (int c + 3)
+        | c -> c 
 
 (* Question 2.3 *)
-    
-    let baz2 _ = failwith "not implemented"
+   
+    let baz2 str = (bar str) |> List.fold (fun acc r -> string (foo r) + acc) ""
     
 (* Question 2.4 *)
 
@@ -114,28 +151,75 @@ open System
        
        You do not have to step through the foo- or the bar functions. 
        You are allowed to evaluate these function immediately.
+      
+    
        
-    A: <Your answer goes here>
+    A:  Evaluation: 
+        baz "hej"
+        ~> aux ['h'; 'e'; 'j'] 
+        ~> "h" + aux ['e';'j']
+        ~> "h" + ("e" +  aux ['j'])
+        ~> "h" + ("e" +  ("j" + aux []))
+        ~> "h" + ("e" +  ("j" + ("")))
+        ~> "h" + ("e" +  ("j"))
+        ~> "h" + ("ej")
+        ~> "hej"
+        
+        It does not compute the result as it goes, which means that when it is done doing its recursive calls, it has yet to compute everything.
+        so after ~> "h" + ("e" +  ("j" + aux [])) it has to step back towards every function and compute it. 
 
     *)
     
 (* Question 2.5 *)
     
-    let bazTail _ = failwith "not implemented"
-        
+    let bazTail str  : string =
+        let rec aux rest c =
+            match rest with
+            | [] -> c ""
+            | x :: xs -> aux xs (fun result -> c(string(foo x) + result))
+            
+        aux (bar str) id 
+       
+
 (* 3: Atbash Ciphers *)
 
 (* Question 3.1 *)
     
-    let encrypt _ = failwith "not implemented"
+    let encrypt (text : string) : string  =
+        let toCharList (str : string) = [for c in str -> c]
+        let alphabet = ['a' .. 'z']
+        let revAlphabet = List.rev alphabet
+        
+        let helper (c : char ) =
+         match c with
+         | ' ' -> c
+         | c ->
+             let index = alphabet |> List.findIndex (fun x -> x = c) 
+             revAlphabet[index]
+         
+        List.fold (fun acc r -> acc + string (helper r) ) "" (toCharList text)
+        
+        // Stupid version maybe. Clever version would be to use ascii,
+        // Say Z ascii (122) minus the characters ascii + 93
+  
     
 (* Question 3.2 *)
 
-    let decrypt _ = failwith "not implemented"
+    let decrypt (text : string ) : string  =
+        encrypt text 
     
 (* Question 3.3 *)
 
-    let splitAt _ = failwith "not implemented"
+    let splitAt (i : int) (str : string) : string list  =
+        listLength = str.Length 
+        let rec help chunk =
+            if listLength >= chunk then []
+            else
+                str[chunk .. chunk + i]
+            
+            
+        
+        
     
 (* Question 3.4 *)
     
