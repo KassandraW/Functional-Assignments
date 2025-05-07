@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "xPymcB6GHSg=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\kassa\\Desktop\\uni\\4_semester\\Functional-Assignments\\exam24\\exam24.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\kassa\\.nuget\\packages\\fsharp.core\\9.0.100\\fsharp.core.9.0.100.nupkg.sha512",
+    "C:\\Users\\kassa\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.20\\microsoft.netcore.app.ref.7.0.20.nupkg.sha512",
+    "C:\\Users\\kassa\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.20\\microsoft.windowsdesktop.app.ref.7.0.20.nupkg.sha512",
+    "C:\\Users\\kassa\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.20\\microsoft.aspnetcore.app.ref.7.0.20.nupkg.sha512",
+    "C:\\Users\\kassa\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\7.0.20\\microsoft.netcore.app.host.win-x64.7.0.20.nupkg.sha512"
+  ],
+  "logs": []
+}
