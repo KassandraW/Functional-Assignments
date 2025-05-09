@@ -114,7 +114,7 @@ open System
     Q: What do the function foo, bar, and baz do.
        Focus on what they do rather than how they do it.
 
-    A: bar turns a given string into a character list. foo encrypts a character by offsetting it with 3. E.g. The character 'a' becomes 'd'.
+    A: bar turns a given string into a character list. foo encrypts a character by offsetting it with 3.
         baz takes a given string and encrypts it.
     
     Q: What would be appropriate names for functions 
@@ -132,9 +132,7 @@ open System
         | c when Char.IsWhiteSpace c -> c 
         | c when c > 'w'             -> char (int c - 23)
         | c when c < 'x'             -> char (int c + 3)
-        | c -> c
-        
-        (* The function is not exhaustive - incomplete pattern matches. We don't catch all possible inputs *)
+        | c -> c 
 
 (* Question 2.3 *)
    
@@ -212,12 +210,32 @@ open System
     
 (* Question 3.3 *)
 
-    let splitAt (i : int) (str : string) : string list  = failwith "not implemented"
-            
+    let splitAt (i : int) (str : string) : string list  =
+        let rec helper c (s:string) : string list  =
+            match s with
+            | "" -> c [s]
+            | _ -> 
+                    let substring = s[0 .. i - 1]
+                    let rest = s[i .. s.Length+1]
+                    helper (fun r -> c (substring :: r)) rest       
+        helper id str 
+        
+
     
 (* Question 3.4 *)
-    
-    let parEncrypt _ = failwith "not implemented"
+    let parEncrypt (str: string ) (i : int) : string =
+        let encryptAsync s : Async<string> =
+            async{
+                return encrypt s
+            }
+            
+        let encryptedStrings =
+            splitAt i str
+            |> List.map encryptAsync
+            |> Async.Parallel
+            |> Async.RunSynchronously
+        
+        String.concat "" encryptedStrings
     
 (* Question 3.5 *)
         
