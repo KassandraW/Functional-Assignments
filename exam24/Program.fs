@@ -1,5 +1,6 @@
 ﻿open System
 open Exam2024
+open JParsec.TextParser
 
 let testQ1 () =
     let rect = Rectangle(2., 3.)
@@ -21,8 +22,7 @@ let testQ2 () =
     ()
 
 let testQ3 () =
-    printfn "Testing Question 3"
-    // place debug prints for Q3 here
+    printfn "%A" (run parseEncrypt "hello world") 
     ()
 
 let testQ4 () =
@@ -32,5 +32,5 @@ let testQ4 () =
 
 [<EntryPoint>]
 let main argv =
-    testQ1 ()
+    testQ3()
     0 // return an integer exit code

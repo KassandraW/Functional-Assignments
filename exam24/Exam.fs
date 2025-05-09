@@ -1,6 +1,6 @@
 ﻿module Exam2024
 
-open System    
+open System
     
 (* If you are importing this into F# interactive then comment out
    the line above and remove the comment for the line bellow.
@@ -114,7 +114,7 @@ open System
     Q: What do the function foo, bar, and baz do.
        Focus on what they do rather than how they do it.
 
-    A: bar turns a given string into a character list. foo encrypts a character by offsetting it with 3.
+    A: bar turns a given string into a character list. foo encrypts a character by offsetting it with 3. E.g. The character 'a' becomes 'd'.
         baz takes a given string and encrypts it.
     
     Q: What would be appropriate names for functions 
@@ -132,7 +132,9 @@ open System
         | c when Char.IsWhiteSpace c -> c 
         | c when c > 'w'             -> char (int c - 23)
         | c when c < 'x'             -> char (int c + 3)
-        | c -> c 
+        | c -> c
+        
+        (* The function is not exhaustive - incomplete pattern matches. We don't catch all possible inputs *)
 
 (* Question 2.3 *)
    
@@ -212,9 +214,6 @@ open System
 
     let splitAt (i : int) (str : string) : string list  = failwith "not implemented"
             
-            
-        
-        
     
 (* Question 3.4 *)
     
@@ -223,8 +222,13 @@ open System
 (* Question 3.5 *)
         
     open JParsec.TextParser
+    let pletter = satisfy Char.IsLetter
+    let charListToString (lst: char list ) =
+        lst |> List.toArray |> System.String
 
-    let parseEncrypt _ = failwith "not implemented"
+    let parseEncrypt : Parser<String> =
+        many1 pletter |>> fun x -> charListToString x |> encrypt  
+        
 
 (* 4: Letterboxes *)
     
@@ -232,7 +236,7 @@ open System
     
     type clicker = unit // insert your own type here
     
-    let newClicker _ = failwith "not implemented"
+    let newClicker (lst : char list) (numWheels : int ) : clicker = failwith "not implemented"
 
 (* Question 4.2 *)
     
