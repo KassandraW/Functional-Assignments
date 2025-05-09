@@ -22,7 +22,7 @@ let testQ2 () =
     ()
 
 let testQ3 () =
-    printfn "%A" (run parseEncrypt "hello world") 
+    printfn "%A" (run parseEncrypt "Hello World") 
     ()
 
 let testQ4 () =

@@ -78,7 +78,9 @@ module Interpreter.Memory
             async{
                 let! msg = i.Receive()
                 match msg with
-                | Alloc -> 
+                | Alloc a ->
+                    match oldMemory.alloc a mem with
+                    | 
                
             }
             

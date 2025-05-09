@@ -155,7 +155,6 @@ open System
     
        
     A:  Evaluation: 
-        baz "hej"
         ~> aux ['h'; 'e'; 'j'] 
         ~> "h" + aux ['e';'j']
         ~> "h" + ("e" +  aux ['j'])
@@ -165,6 +164,7 @@ open System
         ~> "h" + ("ej")
         ~> "hej"
         
+        its not a tail recursion because it doesn't use an acculumator or continuation.
         It does not compute the result as it goes, which means that when it is done doing its recursive calls, it has yet to compute everything.
         so after ~> "h" + ("e" +  ("j" + aux [])) it has to step back towards every function and compute it. 
 
@@ -186,6 +186,9 @@ open System
 (* Question 3.1 *)
     
     let encrypt (text : string) : string  =
+        let convert_char c = if Char.IsWhiteSpace c then c else 'z' - c + 'a'
+        String.map convert_char text 
+        (*
         let toCharList (str : string) = [for c in str -> c]
         let alphabet = ['a' .. 'z']
         let revAlphabet = List.rev alphabet
@@ -197,10 +200,7 @@ open System
              let index = alphabet |> List.findIndex (fun x -> x = c) 
              revAlphabet[index]
          
-        List.fold (fun acc r -> acc + string (helper r) ) "" (toCharList text)
-        
-        // Stupid version maybe. Clever version would be to use ascii,
-        // Say Z ascii (122) minus the characters ascii + 93
+        List.fold (fun acc r -> acc + string (helper r) ) "" (toCharList text) *)
   
     
 (* Question 3.2 *)
@@ -216,7 +216,7 @@ open System
             | "" -> c [s]
             | _ -> 
                     let substring = s[0 .. i - 1]
-                    let rest = s[i .. s.Length+1]
+                    let rest = s[i ..]
                     helper (fun r -> c (substring :: r)) rest       
         helper id str 
         
@@ -230,12 +230,12 @@ open System
             }
             
         let encryptedStrings =
-            splitAt i str
-            |> List.map encryptAsync
-            |> Async.Parallel
-            |> Async.RunSynchronously
+            splitAt i str 
+            |> List.map encryptAsync 
+            |> Async.Parallel//fordel til elever
+            |> Async.RunSynchronously // sig START
         
-        String.concat "" encryptedStrings
+        String.concat "" encryptedStrings //saml alle eksamenssættene
     
 (* Question 3.5 *)
         
@@ -245,14 +245,16 @@ open System
         lst |> List.toArray |> System.String
 
     let parseEncrypt : Parser<String> =
-        many1 pletter |>> fun x -> charListToString x |> encrypt  
+        let charParser = satisfy (fun c -> Char.IsLetter c || Char.IsWhiteSpace c)
+        many charParser  |>> (fun x -> List.toArray x |> String  |> encrypt)
         
 
 (* 4: Letterboxes *)
     
 (* Question 4.1 *)
     
-    type clicker = unit // insert your own type here
+    type clicker =
+        char list // insert your own type here
     
     let newClicker (lst : char list) (numWheels : int ) : clicker = failwith "not implemented"
 
