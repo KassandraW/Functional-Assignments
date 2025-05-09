@@ -210,12 +210,7 @@ open System
     
 (* Question 3.3 *)
 
-    let splitAt (i : int) (str : string) : string list  =
-        listLength = str.Length 
-        let rec help chunk =
-            if listLength >= chunk then []
-            else
-                str[chunk .. chunk + i]
+    let splitAt (i : int) (str : string) : string list  = failwith "not implemented"
             
             
         
