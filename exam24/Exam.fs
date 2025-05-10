@@ -240,9 +240,8 @@ open System
 (* Question 3.5 *)
         
     open JParsec.TextParser
-    let pletter = satisfy Char.IsLetter
     let charListToString (lst: char list ) =
-        lst |> List.toArray |> System.String
+        lst |> List.toArray |> String
 
     let parseEncrypt : Parser<String> =
         let charParser = satisfy (fun c -> Char.IsLetter c || Char.IsWhiteSpace c)
