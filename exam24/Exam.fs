@@ -1,6 +1,7 @@
 ﻿module Exam2024
 
 open System
+open System.Linq
     
 (* If you are importing this into F# interactive then comment out
    the line above and remove the comment for the line bellow.
@@ -251,17 +252,37 @@ open System
 (* 4: Letterboxes *)
     
 (* Question 4.1 *)
-    
+    //RECORD
     type clicker =
-        char list // insert your own type here
+        {
+           wheel : char array
+           position : int list
+        }
+        
     
-    let newClicker (lst : char list) (numWheels : int ) : clicker = failwith "not implemented"
+    let newClicker (lst : char list) (numWheels : int ) : clicker =
+        { wheel = lst |> List.toArray
+          position = List.init numWheels (fun _ -> 0) }
 
 (* Question 4.2 *)
     
-    let click _ = failwith "not implemented"
+    let click (cl : clicker ) : clicker =
+        let max = cl.wheel.Length
+        let rec increment positions =
+            match positions with
+            | [] -> []
+            | x :: xs ->
+                match x with
+                | x when x + 1 < max -> x + 1 :: xs
+                | _ -> 0  :: increment xs
         
-    let read _ = failwith "not implemented"
+        {cl with position = increment (List.rev cl.position) |> List.rev}
+
+        
+    let read (cl : clicker ) =
+        cl.position
+        |> List.map (fun i -> cl.wheel[i])
+        |> System.String.Concat 
 
     
 (* Question 4.3 *)
@@ -280,13 +301,26 @@ open System
       
     let evalSM cl (SM f) = f cl
     
-    let click2 _ = failwith "not implemented"
+    let click2 : StateMonad<unit> =
+        SM( fun cl -> ((), click cl)) 
     
-    let read2 _ = failwith "not implemented"
+    let read2 : StateMonad<String> =
+        SM( fun cl -> (read cl, click cl)) 
 
 (* Question 4.4 *)
     
-    let multipleClicks _ = failwith "not implemented"
+    let multipleClicks (x : int) : StateMonad<String List>  =
+        if x <= 0 then
+            ret []
+        else
+            read2 >>= fun current ->
+                let rec loop n acc =
+                    if n = 0 then
+                        ret (List.rev acc)
+                    else
+                        click2 >>= fun _ -> read2 >>= fun s -> loop (n-1) (s :: acc)
+                
+                loop (x - 1) [current]
         
 (* Question 4.5 *)
 
