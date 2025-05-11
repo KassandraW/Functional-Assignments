@@ -8,6 +8,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Assignment9", "Assignment9\
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FPReExam2024", "exam24\FPReExam2024.fsproj", "{A54ABA76-CF13-445F-B332-4B9CF6981D7B}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FPExam2024", "FPExam2024\FPExam2024\FPExam2024.fsproj", "{7F09E766-F219-4183-B02F-B8188BD6626C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,5 +36,9 @@ Global
 		{A54ABA76-CF13-445F-B332-4B9CF6981D7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A54ABA76-CF13-445F-B332-4B9CF6981D7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A54ABA76-CF13-445F-B332-4B9CF6981D7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F09E766-F219-4183-B02F-B8188BD6626C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F09E766-F219-4183-B02F-B8188BD6626C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F09E766-F219-4183-B02F-B8188BD6626C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F09E766-F219-4183-B02F-B8188BD6626C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
