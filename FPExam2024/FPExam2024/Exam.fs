@@ -42,7 +42,7 @@
         aux 0 trs 
         
         
-    let participants (trs : transactions) : Set<string> * Set<string> =
+    let participants (trs : transactions) : Set<string> * Set<string> = failwith "not implemented"
         
     
     
