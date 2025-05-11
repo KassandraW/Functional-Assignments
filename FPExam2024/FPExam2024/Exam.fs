@@ -27,11 +27,23 @@
         | Pay     of string * int * transactions
         | Receive of string * int * transactions
         
-    let balance _ = failwith "not implemented"
+    let rec balance (trs : transactions) : int  =
+        match trs with
+        | Empty -> 0
+        | Pay(_,a,trslist) -> balance trslist - a 
+        | Receive(_,a,trslist) -> balance trslist + a 
         
-    let balanceAcc _ = failwith "not implemented"
+    let balanceAcc (trs : transactions) : int =
+        let rec aux acc tra = 
+            match tra with
+            | Empty -> acc
+            | Pay(_,a,trslist) -> aux (acc - a) trslist
+            | Receive(_,a,trslist) -> aux (acc + a) trslist
+        aux 0 trs 
         
-    let participants _ = failwith "not implemented"
+        
+    let participants (trs : transactions) : Set<string> * Set<string> =
+        
     
     
     let balanceFold _ = failwith "not implemented"
