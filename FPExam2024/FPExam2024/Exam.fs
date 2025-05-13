@@ -1,5 +1,7 @@
 ﻿module Exam2024
 
+    open JParsec.TextParser
+
 (* If you are importing this into F# interactive then comment out
    the line above and remove the comment for the line bellow.
 
@@ -163,22 +165,73 @@
 
 (* Question 3.1 *)
     
-    let encrypt _ = failwith "not imlpemented"
+    let encrypt (text : string) (offset : int) : string =
+        let alphabet = [|'a'..'z'|]
+        let length = alphabet.Length 
+        
+        let offsetCharacter (c:char) : char =
+            match c with
+            | ' ' -> c
+            | _ ->
+                let newIndex = ((Array.findIndex (fun ch -> ch = c) alphabet) + offset) % length // 7 + 3 = 10 -> 10 % 26
+                alphabet[newIndex]
+                    
+        text |> Seq.map offsetCharacter |> Seq.toArray |> System.String
+                    
+                
     
 (* Question 3.2 *)
-    let decrypt _ = failwith "not imlpemented"
+    let decrypt (text:string) offset =
+        let alphabet = [|'a'..'z'|]
+        let length = alphabet.Length
+        
+        let offsetCharacter (c:char) : char =
+            match c with
+            | ' ' -> c
+            | _ ->
+                let newIndex = ((Array.findIndex (fun ch -> ch = c) alphabet) - offset) % length
+                let wrappedIndex = if newIndex  < 0 then newIndex + length else newIndex
+                alphabet[wrappedIndex]
+                    
+        text |> Seq.map offsetCharacter |> Seq.toArray |> System.String
     
 (* Question 3.3 *)
-    let decode _ = failwith "not imlpemented"
+    let decode (plainText : string) (encryptedText : string) : int option =
+        if plainText.Length <> encryptedText.Length then None
+        else 
+            let alphabet = [|'a'..'z'|]
+            let plainIndex = Array.findIndex ((=) plainText[0]) alphabet
+            let encryptedIndex = Array.findIndex ((=)encryptedText[0]) alphabet
+            let offset = (encryptedIndex - plainIndex + 26) % 26 
+            
+            if System.String.Equals(encrypt plainText offset, encryptedText ) then Some offset else None 
+        
+         
     
 (* Question 3.4 *)
-    let parEncrypt _ = failwith "not imlpemented"
+    let parEncrypt (text:string) offset =
+        let splitText = text.Split ' '
+        let encryptAsync s : Async<string> =
+            async{
+                return encrypt s offset 
+            }
+            
+        let encryptedStrings =
+            splitText  
+            |> Array.map encryptAsync 
+            |> Async.Parallel
+            |> Async.RunSynchronously 
+        
+        String.concat " " encryptedStrings
     
 (* Question 3.5 *)
         
     open JParsec.TextParser
-
-    let parseEncrypt _ = failwith "not imlpemented"
+    
+    let parseEncrypt offset : Parser<string> =
+        let charParser = satisfy (fun c -> System.Char.IsLetter c || System.Char.IsWhiteSpace c)
+        many charParser  |>> (fun x -> encrypt (System.String (List.toArray x)) offset)
+        
 
 (* 4: Letterboxes *)
     
