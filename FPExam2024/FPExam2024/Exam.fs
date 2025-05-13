@@ -30,25 +30,47 @@
     let rec balance (trs : transactions) : int  =
         match trs with
         | Empty -> 0
-        | Pay(_,a,trslist) -> balance trslist - a 
-        | Receive(_,a,trslist) -> balance trslist + a 
+        | Pay(_,a,trsList) -> balance trsList - a 
+        | Receive(_,a,trsList) -> balance trsList + a 
         
     let balanceAcc (trs : transactions) : int =
         let rec aux acc tra = 
             match tra with
             | Empty -> acc
-            | Pay(_,a,trslist) -> aux (acc - a) trslist
-            | Receive(_,a,trslist) -> aux (acc + a) trslist
+            | Pay(_,a,trsList) -> aux (acc - a) trsList
+            | Receive(_,a,trsList) -> aux (acc + a) trsList
         aux 0 trs 
         
+    let participants (trs : transactions) : Set<string> * Set<string> =
+        let rec aux (s1,s2) tra = 
+            match tra with
+            | Empty -> (s1,s2)
+            | Pay(n,_,trsList) -> aux (Set.add n s1,s2) trsList
+            | Receive(n,_,trsList) -> aux (s1,Set.add n s2) trsList
+        aux (Set.empty,Set.empty) trs
         
-    let participants (trs : transactions) : Set<string> * Set<string> = failwith "not implemented"
+    
+    let rec balanceFold (payFolder: 'a -> string -> int -> 'a) (receiveFolder :'a -> string -> int -> 'a) acc trs: 'a=
+        match trs with
+        | Empty -> acc
+        | Pay(name,amount, trsList) -> balanceFold payFolder receiveFolder (payFolder acc name amount) trsList
+        | Receive(name,amount,trsList) -> balanceFold payFolder receiveFolder (receiveFolder acc name amount) trsList
+    
+    let balance' trs = balanceFold (fun acc _ x -> acc - x) (fun acc _ x -> acc + x) 0 trs
+    
+    let collect (trs : transactions) : Map<string,int> =
+        let payFolder acc name amount =
+            Map.change name (function
+                             | Some v -> Some (v - amount)
+                             | None -> Some (-amount)) acc
+            
+        let receiveFolder acc name amount =
+            Map.change name (function
+                            | Some v -> Some (v + amount)
+                            | None -> Some amount) acc
+                 
+        balanceFold payFolder receiveFolder Map.empty trs
         
-    
-    
-    let balanceFold _ = failwith "not implemented"
-    
-    let collect _ = failwith "not implemented"
     
     
 (* 2: Code Comprehension *)
@@ -68,38 +90,46 @@
     
     Q: What are the types of functions foo, bar, and baz?
 
-    A: <Your answer goes here>
-
+    A: foo: char -> int
+       bar: string -> char list
+       baz: int list -> int 
 
     Q: What do the function foo, bar, and baz do.
-       Focus on what they do rather than how they do it.
 
-    A: <Your answer goes here>
+    A: foo converts a digit character into its corresponding integer. 
+       bar converts a string into a list of characters
+       baz converts a list of digits to the corresponding integer value in reverse.
     
     Q: What would be appropriate names for functions 
        foo, bar, and baz?
 
-    A: <Your answer goes here>
+    A: foo: digitToInt
+       bar: charToString
+       baz: reversedDigitsToInt
     
     Q: The function foo only behaves reasonably if certain 
        constraint(s) are met on its argument. 
        What is/are these constraints?
         
-    A: <Your answer goes here>
+    A: The argument should be constrained to digits only.
     
     Q: The function baz only behaves reasonably if certain 
        constraint(s) are met on its argument. 
        What is/are these constraints?
         
-    A: <Your answer goes here>    *)
+    A: The integers should be in the range 0-9 *)
     
 (* Question 2.2 *)
     
-    let stringToInt _ = failwith "not implemented"
+    let stringToInt (s : string ) : int =
+        s |> bar |> List.map foo |> List.rev |> baz
+        
 
 (* Question 2.3 *)
     
-    let baz2 _ = failwith "not implemented"
+    let baz2 lst : int  =
+        List.fold (fun acc x -> x + 10 * acc) 0 (List.rev lst) 
+        
     
 (* Question 2.4 *)
 
@@ -121,7 +151,13 @@
     
 (* Question 2.5 *)
 
-    let bazTail _ = failwith "not implemented"
+    let bazTail lst: int =
+        let rec aux c lst =
+            match lst with
+            | [] -> c 0
+            | x :: xs -> aux (fun result -> c(x + 10 * result)) xs
+        aux id lst 
+   
         
 (* 3: Caesar Ciphers *)
 
