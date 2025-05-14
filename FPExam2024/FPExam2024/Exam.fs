@@ -1,6 +1,7 @@
 ﻿module Exam2024
 
     open JParsec.TextParser
+    open Option
 
 (* If you are importing this into F# interactive then comment out
    the line above and remove the comment for the line bellow.
@@ -237,15 +238,31 @@
     
 (* Question 4.1 *)
     
-    type letterbox = unit // Replace with your type
+    type letterbox = Map<string, string list>   
     
-    let empty _ = failwith "not imlpemented"
+    let empty() : letterbox  =
+        Map.empty 
+        
 
 (* Question 4.2 *)
-
-    let post _ = failwith "not imlpemented"
-    
-    let read _ = failwith "not imlpemented"
+    let post sender message (mb:letterbox)  : letterbox =
+        let updateMessages = match mb.TryFind sender with
+                                | Some messages -> messages @ [message] 
+                                | None -> [message]
+        
+        Map.add sender updateMessages mb 
+                
+    let read sender (mb:letterbox) : Option<string*letterbox> =
+        match mb.TryFind sender with
+        | Some (x :: xs) ->
+            let updatedMB =
+                if xs.IsEmpty then mb.Remove sender
+                else mb.Add(sender,xs)
+            Some(x, updatedMB)
+        | _ -> None  
+            
+        
+ 
 
     
 (* Question 4.3 *)
