@@ -9,6 +9,7 @@
     <Compile Include="JParsec.fs" />
     <Compile Include="Exam.fs" />
     <Compile Include="Program.fs" />
+    <Content Include="Functional Programming Exam 2023-08-17.pdf" />
   </ItemGroup>
   <ItemGroup />
 </Project>
