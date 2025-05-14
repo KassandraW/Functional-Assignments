@@ -187,7 +187,6 @@
 (* Question 3.4: Parsing balanced brackets *)    
                
     open JParsec.TextParser
-    
         
     let ParseBalanced, bref = createParserForwardedToRef<unit>()
     
