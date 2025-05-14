@@ -282,8 +282,11 @@
       
     let evalSM (SM f) = f (empty ())
     
-    let post2 _ = failwith "not implemented"
-    let read2 _ = failwith "not implemented"
+    let post2 sender message : StateMonad<unit>=
+        SM (fun lb -> (Some ((), post sender message lb)) )
+    let read2 sender  : StateMonad<string> =
+        SM (fun lb -> (read sender lb))
+                
 
 (* Question 4.4 *)
 
@@ -301,4 +304,16 @@
         | Read of string
     type log = MType list
     
-    let trace _ = failwith "not implemented"
+    let trace (l : log) : StateMonad<string list> =
+        let rec loop acc log =
+            state {
+                match log with
+                | [] -> return List.rev acc 
+                | Post(s,m) :: rest ->
+                    do! post2 s m
+                    return! loop acc rest
+                | Read(s) :: rest ->
+                    let! msg = read2 s
+                    return! loop (msg :: acc) rest 
+        }
+        loop [] l 

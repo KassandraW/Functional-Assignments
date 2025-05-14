@@ -12,8 +12,15 @@ let testQ1 () =
     ()
 
 let testQ2 () =
-    printfn "Testing Question 2"
-    // place debug prints for Q2 here
+    printfn "%A" ([Post("Alice", "Hello John!"); Post("Bob", "John, how are you?");
+    Post("Alice", "Good bye John.");
+    Read("Bob"); Read("Alice"); Read("Alice")] |>
+    trace |> evalSM |> Option.map fst)
+    
+    printfn "%A" ([Post("Alice", "Hello John!"); Post("Bob", "John, how are you?");
+    Post("Alice", "Good bye John.");
+    Read("Charlie"); Read("Bob"); Read("Alice"); Read("Alice")] |>
+    trace |> evalSM |> Option.map fst)
     ()
 
 let testQ3 () =
@@ -28,5 +35,5 @@ let testQ4 () =
 
 [<EntryPoint>]
 let main argv =
-    testQ1 ()
+    testQ2 ()
     0 // return an integer exit code
