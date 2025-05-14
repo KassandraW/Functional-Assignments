@@ -10,6 +10,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FPReExam2024", "exam24\FPRe
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FPExam2024", "FPExam2024\FPExam2024\FPExam2024.fsproj", "{7F09E766-F219-4183-B02F-B8188BD6626C}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FPReExam2023", "FPExam2023_2\FPReExam2023\FPReExam2023.fsproj", "{B5E55D00-A467-4CAA-A95A-1B2607B34B29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,5 +42,9 @@ Global
 		{7F09E766-F219-4183-B02F-B8188BD6626C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F09E766-F219-4183-B02F-B8188BD6626C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F09E766-F219-4183-B02F-B8188BD6626C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5E55D00-A467-4CAA-A95A-1B2607B34B29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5E55D00-A467-4CAA-A95A-1B2607B34B29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5E55D00-A467-4CAA-A95A-1B2607B34B29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5E55D00-A467-4CAA-A95A-1B2607B34B29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
