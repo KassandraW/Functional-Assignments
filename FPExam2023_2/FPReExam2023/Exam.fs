@@ -32,16 +32,31 @@
     let p3 = Add(Add(Num 5, Num 3), Add(Num 7, Num (-9)))
     
 (* Question 1.1: Evaluation *)
-    let eval _ = failwith "not implemented"
+    let rec eval (a:arith) =
+        match a with
+        | Num x  -> x
+        | Add (x,y) -> eval x + eval y 
     
 (* Question 1.2: Negation and subtraction *)
-    let negate _ = failwith "not implemented"
+    let rec negate a =
+        match a with
+        | Num x  -> Num (-x)
+        | Add (x,y) ->Add(negate x, negate y)
         
-    let subtract _ = failwith "not implemented"
+    let subtract a b: arith  =
+        Add(a,negate b)
+        
 
 (* Question 1.3: Multiplication *)
         
-    let multiply _ = failwith "not implemented"
+    let rec multiply a b : arith =
+        match a,b with
+        | Num x , Num y -> Num (x * y)
+        | Num x, Add(c,d) -> Add (multiply (Num x) c, multiply (Num x) d) 
+        | Add(c,d), Num y  -> Add(multiply (Num y) c, multiply (Num y) d)
+        | Add(c,d), e -> Add (multiply c e, multiply d e)
+        
+        
     
 (* Question 1.4: Exponents *)
 
