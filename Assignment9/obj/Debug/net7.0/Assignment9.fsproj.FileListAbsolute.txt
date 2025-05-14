@@ -1,0 +1,5 @@
+C:\Users\kassa\Desktop\Functional-Assignments\Assignment9\obj\Debug\net7.0\Assignment9.fsproj.AssemblyReference.cache
+C:\Users\kassa\Desktop\Functional-Assignments\Assignment9\obj\Debug\net7.0\Assignment9.AssemblyInfoInputs.cache
+C:\Users\kassa\Desktop\Functional-Assignments\Assignment9\obj\Debug\net7.0\Assignment9.AssemblyInfo.fs
+C:\Users\kassa\Desktop\Functional-Assignments\Assignment9\obj\Debug\net7.0\Assignment9.fsproj.CoreCompileInputs.cache
+C:\Users\kassa\Desktop\Functional-Assignments\Assignment9\obj\Debug\net7.0\Assignment9.sourcelink.json
