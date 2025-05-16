@@ -228,20 +228,8 @@
         
 (* Question 3.2: Arbitrary delimiters *)
     
-    let balanced2 (m : Map<char,char>) str : bool =
-        let rec aux stack lst =
-            match lst with
-            | [] -> stack = []
-            | c :: rest when c = '{'-> aux ('}' :: stack) rest
-            | c :: rest when c = '(' -> aux (')' :: stack) rest
-            | c :: rest when c = '[' -> aux (']' :: stack) rest
-            | c :: rest ->
-                    match stack with
-                    | [] -> false 
-                    | s :: restOfStack when s = c -> aux restOfStack rest
-                    | _ -> false
-                    
-        str |> explode |> aux [] 
+    let balanced2 (m : Map<char,char>) str : bool = failwith "not implemented"
+        
         
     
 (* Question 3.3: Matching brackets and palindromes *)    

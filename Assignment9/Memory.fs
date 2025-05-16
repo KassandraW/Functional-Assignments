@@ -67,8 +67,8 @@ module Interpreter.Memory
     type message =
         | Alloc     of int * AsyncReplyChannel<Result<int, error>>
         | Free      of int * int * AsyncReplyChannel<Result<unit, error>>
-        | SetMem    of int * int * AsyncReplyChannel<Result<int, error>>
-        | GetMem    of int * AsyncReplyChannel<Result<unit, error> 
+        | SetMem    of int * int * AsyncReplyChannel<Result<unit, error>>
+        | GetMem    of int * AsyncReplyChannel<Result<int, error>> 
        
     type memory = Mem of MailboxProcessor<message>
     
@@ -78,15 +78,44 @@ module Interpreter.Memory
             async{
                 let! msg = i.Receive()
                 match msg with
-                | Alloc a ->
-                    match oldMemory.alloc a mem with
-                    | 
-               
+                | Alloc (size,reply) ->
+                    match oldMemory.alloc size mem with
+                    | Ok (newMem, addr) ->
+                        reply.Reply(Ok addr)
+                        return! messageLoop newMem
+                    | Error e ->
+                        reply.Reply(Error e)
+                        return! messageLoop mem
+                | Free (ptr,size,reply) ->
+                    match oldMemory.free ptr size mem with
+                    | Ok newMem ->
+                        reply.Reply(Ok())
+                        return! messageLoop newMem
+                    | Error e ->
+                        reply.Reply(Error e)
+                        return! messageLoop mem
+                | SetMem (ptr, v, reply) -> 
+                    match oldMemory.setMem ptr v mem with
+                    | Ok newMem ->
+                        reply.Reply(Ok())
+                        return! messageLoop newMem
+                    | Error e ->
+                        reply.Reply(Error e)
+                        return! messageLoop mem
+                | GetMem (ptr,reply )->
+                    match oldMemory.getMem ptr mem with
+                    | Ok (ptr) ->
+                        reply.Reply(Ok ptr)
+                        return! messageLoop mem 
+                    | Error e ->
+                        reply.Reply(Error e)
+                        return! messageLoop mem
             }
-            
-            
         messageLoop(oldMemory.empty s)
-    let free = oldMemory.free
+        
+    let empty s = Mem (MailboxProcessor.Start (inbox s))
+        
+    let free addr size (Mem mbox)= mbox.PostAndReply(fun reply -> Alloc(size,reply))
     let empty = oldMemory.empty
     let alloc = oldMemory.alloc
     let setMem = oldMemory.setMem
