@@ -60,13 +60,26 @@
     
 (* Question 1.4: Exponents *)
 
-    let pow _ = failwith "not implemented"
+    let pow a b : arith =
+        let rec aux acc i =
+            match eval i with
+                | 1 -> acc
+                | _ ->
+                    aux (multiply acc a) (subtract i (Num 1) )
+        aux a b
+      
+            
     
 (* Question 1.5: Iteration *)
 
-    let iterate _ = failwith "not implemented"
+    let rec iterate (f : 'a -> 'a) (acc: 'a) (a : arith) : 'a =
+        match eval a with
+        | 0 -> acc
+        | _ -> iterate f (f acc) (subtract a (Num 1))
         
-    let pow2 _ = failwith "not implemented"
+        
+    let pow2 a b =
+        iterate (fun x -> multiply x a ) (Num 1) b 
     
 (* 2: Code Comprehension *)
  
@@ -99,18 +112,23 @@
     
     Q: What are the types of functions foo, bar, and baz?
 
-    A: <Your answer goes here>
-
+    A: foo: int -> bool
+       bar: int -> bool
+       baz: int list -> int list * int list 
 
     Q: What do the function foo, bar, and baz do.
        Focus on what they do rather than how they do it.
 
-    A: <Your answer goes here>
+    A: foo checks if a given integer is even
+       bar checks if a given integer is odd
+       baz sorts a list of integers into two new lists of odd and even numbers
     
     Q: What would be appropriate names for functions 
        foo, bar, and baz?
 
-    A: <Your answer goes here>
+    A: foo: isEven
+       bar: isOdd
+       baz: splitEvenOdd
         
     *)
         
@@ -129,19 +147,26 @@
        what are the types of snippets A, B, and C, expressed using the F# syntax for types, and what are they -- 
        focus on what they do rather than how they do it.
     
-    A: <Your answer goes here>
+    A: 
+        a: type - int list * int list
+           does - recursively processes the rest of the list, partitioning it into a list of even and odd numbers, and returns a tuple of two lists.
+        b: type - bool 
+           does - called inside the foo function, not baz. checks if x is odd.
+        c: type - int list * int list
+           does - the first list is unchanged, x is prepended to the second list. Happens when x is not even.  
     
     Q: * Explain the use of the `and`-operator that connect the `foo` and the `bar` functions.
        * Argue if the program would work if you replaced `and` with `let rec`.
 
-    A: <Your answer goes here>
+    A: The and operator is used when two recursive functions call each other. It declares them together. They are mutually dependent.
+       Without it, it would fail to compile, because when foo is defined, bar hasn't been defined yet. Bar however, would be able to call foo. 
 
     *)
 
 (* Question 2.3: No recursion *) 
 
-    let foo2 _ = failwith "not implemented"
-    let bar2 _ = failwith "not implemented"
+    let foo2 x = x % 2 = 0 
+    let bar2 x = x % 2 = 1 
 
 (* Question 2.4: Tail Recursion *)
 
@@ -157,26 +182,67 @@
        You do not have to step through the foo- or the bar-functions. You are allowed to evaluate 
        those function immediately.
 
-    A: <Your answer goes here>
+    A: 
+        baz [2;4]
+        -> let ys, zs = baz [4] in (2 :: ys, zs)
+        -> let ys, zs = ([4], []) in (2 :: ys,zs)
+        -> ([2;4],[])  
+        
+        at each step, the function must wait for the result of the recursive call before it can proceed with
+        list construction ( 2 :: ys, zs). This list construction happens after the recursive call finishes, meaning
+        it cannot reuse the call stack. It builds up deferred operations.
+                    
     
     *)
 (* Question 2.5: Continuations *)
 
-    let bazTail _ = failwith "not implemented"
+    let bazTail (lst : int list ) : int list * int list  =
+        let rec aux c liste : int list * int list=
+            match liste with
+            | [] -> c ([],[])
+            | x :: rest when foo2 x -> aux (fun (even,odd) -> c(x::even,odd)) rest 
+            | x :: rest -> aux (fun (even,odd) -> c(even, x ::odd)) rest 
+        aux id lst 
 
 (* 3: Balanced brackets *)
-
-      
     let explode (str : string) = [for c in str -> c]
     let implode (lst : char list) = lst |> List.toArray |> System.String
     
 (* Question 3.1: Balanced brackets *)
     
-    let balanced _ = failwith "not implemented"
+    let balanced str : bool =
+        let rec aux stack lst =
+            match lst with
+            | [] -> stack = []
+            | c :: rest when c = '{'-> aux ('}' :: stack) rest
+            | c :: rest when c = '(' -> aux (')' :: stack) rest
+            | c :: rest when c = '[' -> aux (']' :: stack) rest
+            | c :: rest ->
+                    match stack with
+                    | [] -> false 
+                    | s :: restOfStack when s = c -> aux restOfStack rest
+                    | _ -> false
+                    
+        str |> explode |> aux [] 
+                
         
 (* Question 3.2: Arbitrary delimiters *)
     
-    let balanced2 _ = failwith "not implemented"
+    let balanced2 (m : Map<char,char>) str : bool =
+        let rec aux stack lst =
+            match lst with
+            | [] -> stack = []
+            | c :: rest when c = '{'-> aux ('}' :: stack) rest
+            | c :: rest when c = '(' -> aux (')' :: stack) rest
+            | c :: rest when c = '[' -> aux (']' :: stack) rest
+            | c :: rest ->
+                    match stack with
+                    | [] -> false 
+                    | s :: restOfStack when s = c -> aux restOfStack rest
+                    | _ -> false
+                    
+        str |> explode |> aux [] 
+        
     
 (* Question 3.3: Matching brackets and palindromes *)    
     

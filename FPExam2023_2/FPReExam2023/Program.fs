@@ -16,13 +16,23 @@ let testQ1 () =
     printfn "%A" (subtract p1 p2)
     printfn "%A" (subtract p2 p3)
     printfn "%A" (subtract p3 p1)
-    printfn "%A" (eval (subtract p3 p1)) *)
+    printfn "%A" (eval (subtract p3 p1)) 
+    printfn "%A" (subtract b (Num 1))
     
     printfn "%A" (multiply p1 p1)
     printfn "%A" (multiply p2 p2)
     printfn "%A" (multiply p3 p3)
-    printfn "%A" (eval(multiply p3 p3))
+    printfn "%A" (eval(multiply p3 p3)) *)
+    
+    
+    printfn "%A" (pow (arith.Num 2) (arith.Num 8))
+    printfn "%A" (pow p2 (arith.Num 3)) 
 
+    //printfn "%A" (iterate negate p1 p2)
+    //printfn "%A" (iterate negate p1 (subtract p2 (arith.Num 1)))
+    
+    printfn "%A" (pow2 (arith.Num 2) (arith.Num 8))
+    printfn "%A" (pow2 p2 (arith.Num 3)) 
     ()
 
 let testQ2 () =
