@@ -228,15 +228,40 @@
         
 (* Question 3.2: Arbitrary delimiters *)
     
-    let balanced2 (m : Map<char,char>) str : bool = failwith "not implemented"
+    let balanced2 (m : Map<char,char>) str : bool =
+        
+        let rec aux stack lst =
+            match lst with
+            | [] -> stack = []
+            | c :: rest ->
+                let asOpener =
+                    if Map.containsKey c m then
+                        aux (Map.find c m :: stack) rest
+                    else false 
+                    
+                let asCloser =
+                    match stack with
+                    | s :: restOfStack when s = c -> aux restOfStack rest 
+                    | _ -> false
+                    
+                asOpener || asCloser
+  
+        str |> explode |> aux []
         
         
     
 (* Question 3.3: Matching brackets and palindromes *)    
     
-    let balanced3 _ = failwith "not implemented" 
+    let balanced3 s : bool  =
+        let m = Map[('(',')');('{','}');('[',']')]
+        balanced2 m s  
     
-    let symmetric _ = failwith "not implemented"
+    let symmetric (s : string ) : bool =
+        let filterString = s.ToLower() |> Seq.filter System.Char.IsLetter |> Seq.toList |> implode 
+        let m = s.ToLower() |> Seq.distinct |> Seq.filter System.Char.IsLetter |> Seq.map (fun c -> (c,c)) |> Map.ofSeq
+        
+        balanced2 m filterString  
+         
         
 (* Question 3.4: Parsing balanced brackets *)    
                
@@ -244,7 +269,9 @@
         
     let ParseBalanced, bref = createParserForwardedToRef<unit>()
     
-    let parseBalancedAux = pstring "Your parser goes here"
+    let parseBalancedAux = pstring "yo"
+        
+        
         
     // uncomment after you have done parseBalancedAUX
     
